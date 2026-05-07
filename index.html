@@ -15,14 +15,27 @@
         button { background: #00ffcc; color: black; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
-<body>
-    <h1>🎮 MINGUELASGO JUEGOS 🎮</h1>
-    <div class="container">
-        <div class="game-card">
-            <h3>Mi Primer Juego</h3>
-            <p>Próximamente...</p>
-            <button onclick="alert('¡Pronto podrás jugar aquí!')">JUGAR</button>
+<body onclick="window.focus()">
+
+    <!-- Título con el efecto neón aplicado -->
+    <h1 style="text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; color: white; animation: blink 1.5s infinite alternate;">🎮 MINGUELASGO JUEGOS 🎮</h1>
+
+    <div id="container">
+        <!-- He puesto una imagen de una ciudad ciberpunk que funciona directo -->
+        <div class="game-card" style="background-image: url('https://unsplash.com'); background-size: cover; background-position: center;">
+            <h3 style="background: rgba(0,0,0,0.8); padding: 5px; display: inline-block;">Block Dash</h3>
+            <p style="background: rgba(0,0,0,0.8); padding: 5px;">Esquiva los bloques rojos</p>
+            <button onclick="location.href='BlockDash/index.html'">JUGAR BLOCK DASH</button>
         </div>
     </div>
+    </div>
+
+    <style>
+    @keyframes blink {
+        from { opacity: 1; text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; }
+        to { opacity: 0.7; text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc; color: #00ffcc; }
+    }
+    </style>
+
 </body>
 </html>
