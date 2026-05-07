@@ -93,10 +93,13 @@ function loop() {
         enemy.speed += 0.25;
     }
 
-    if(player.x < enemy.x + enemy.w && player.x + player.w > enemy.x && 
+        if(player.x < enemy.x + enemy.w && player.x + player.w > enemy.x && 
        player.y < enemy.y + enemy.h && player.y + player.h > enemy.y) {
+        isPaused = true;
         alert("¡BLOCK DASH TERMINADO!\nTu puntuación: " + score);
         location.reload();
+        return;
+    }
     }
 
     requestAnimationFrame(loop);
