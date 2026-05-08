@@ -12,114 +12,107 @@
             margin: 0;
             padding: 20px;
         }
+
+        /* SECCIÓN VIP ESTILO DAVO */
+        .vip-banner {
+            max-width: 650px;
+            margin: 20px auto 40px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .vip-banner input {
+            background: #000;
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .vip-banner button {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .vip-banner button:hover {
+            box-shadow: 0 0 15px #ffd700;
+            transform: scale(1.05);
+        }
+
+        /* CONTENEDOR DE JUEGOS */
         .container { 
-            margin-top: 50px; 
             max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
+
         .game-card { 
             width: 280px; 
             padding: 20px; 
-            margin: 20px;
+            margin: 15px;
             background: #1a1a1a; 
             border: 2px solid #00ffcc; 
             border-radius: 15px;
-            transition: 0.3s; 
-            box-shadow: 0 0 10px rgba(0,255,204,0.3);
-            position: relative;
+            transition: 0.3s;
         }
-        .game-img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        .game-card:hover { 
-            transform: scale(1.05); 
-            box-shadow: 0 0 30px #00ffcc; 
-        }
-        /* Estilo especial para Tarjeta VIP */
-        .vip-card { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-        .vip-card:hover { box-shadow: 0 0 30px #ffd700; border-color: #fff; }
 
-        button { 
-            background: #00ffcc; 
-            color: black; 
-            border: none; 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            width: 100%;
-            margin-top: 10px;
-        }
-        .vip-btn { background: #ffd700; }
+        .game-img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
         
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            background: #000;
-            border: 1px solid #ffd700;
-            border-radius: 5px;
-            color: #ffd700;
-            text-align: center;
-            box-sizing: border-box;
-        }
-
-        h1 { font-size: 3em; text-shadow: 0 0 10px #00ffcc; margin-bottom: 20px; }
-        h3 { margin: 10px 0; color: #fff; }
-        p { color: #888; font-size: 14px; }
-
-        #vip-content { display: none; }
+        h1 { font-size: 3em; text-shadow: 0 0 15px #00ffcc; margin-bottom: 10px; }
+        h3 { color: #fff; margin-bottom: 10px; }
+        
+        .play-btn { background: #00ffcc; color: #000; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h1>🎮 MINGUELASGO JUEGOS</h1>
 
-    <div class="container">
+    <!-- BANNER VIP -->
+    <div class="vip-banner" id="vipSection">
+        <div id="vip-locked" style="display: flex; align-items: center; gap: 15px;">
+            <span style="color: #ffd700; font-weight: bold; letter-spacing: 1px;">⭐ ACCESO VIP:</span>
+            <input type="password" id="vipPass" placeholder="Código">
+            <button onclick="checkVip()">ENTRAR</button>
+        </div>
         
+        <div id="vip-unlocked" style="display: none; width: 100%; text-align: center;">
+            <span style="color: #ffd700; font-weight: bold; margin-right: 20px;">✅ BIENVENIDO MINGUELASGO VIP</span>
+            <button onclick="location.href='vip-extension.html'" style="background: #fff; color: #000;">ABRIR EXTENSIÓN</button>
+        </div>
+    </div>
+
+    <div class="container">
         <!-- JUEGO 1 -->
         <div class="game-card">
             <img src="https://itch.zone" class="game-img">
             <h3>BLOCK DASH</h3>
-            <p>Esquiva los bloques rojos.</p>
-            <button onclick="location.href='BlockDash/index.html'">JUGAR</button>
+            <button class="play-btn" onclick="location.href='BlockDash/index.html'">JUGAR AHORA</button>
         </div>
 
-        <!-- TARJETA VIP (SISTEMA DAVOSTUDIO) -->
-        <div class="game-card vip-card">
-            <div id="vip-login">
-                <img src="https://flaticon.com" class="game-img" style="filter: brightness(1.5);">
-                <h3>ZONA VIP</h3>
-                <p>Introduce el código secreto:</p>
-                <input type="password" id="vipPass" placeholder="••••">
-                <button class="vip-btn" onclick="checkVip()">DESBLOQUEAR</button>
-            </div>
-
-            <!-- Lo que aparece al poner el código bien -->
-            <div id="vip-content">
-                <img src="https://itch.zone" class="game-img">
-                <h3 style="color: #ffd700;">MODO VIP</h3>
-                <p>¡Acceso concedido!</p>
-                <button onclick="location.href='vip-extension.html'">ENTRAR AHORA</button>
-            </div>
+        <!-- JUEGO 2 -->
+        <div class="game-card">
+            <img src="https://freepik.com" class="game-img">
+            <h3>TU OTRO JUEGO</h3>
+            <button class="play-btn" onclick="location.href='OtroJuego/index.html'">JUGAR AHORA</button>
         </div>
-
-        <!-- JUEGO 3 -->
-        <div class="game-card" style="opacity: 0.5;">
-            <img src="https://placeholder.com" class="game-img">
-            <h3>PRÓXIMAMENTE</h3>
-            <p>Nuevo juego en desarrollo.</p>
-            <button disabled>SOON</button>
-        </div>
-
     </div>
 
     <script>
@@ -131,14 +124,16 @@
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            // Hash del código: VIP2024
-            const secret = "05367690623a9d35f492215c328905330e2652a9d8217343e8003185368a3350";
+            // Hash único para la contraseña: M1gu5l R1c0
+            const secret = "f9a4613271188402506e987c6742a78f44d84f881923485c2c776080365778b8";
 
             if (hashHex === secret) {
-                document.getElementById('vip-login').style.display = 'none';
-                document.getElementById('vip-content').style.display = 'block';
+                document.getElementById('vip-locked').style.display = 'none';
+                document.getElementById('vip-unlocked').style.display = 'block';
+                document.getElementById('vipSection').style.border = "2px solid #fff";
+                document.getElementById('vipSection').style.background = "rgba(0, 255, 204, 0.1)";
             } else {
-                alert("Código incorrecto");
+                alert("Código incorrecto. Preguntale a Migui.");
             }
         }
     </script>
