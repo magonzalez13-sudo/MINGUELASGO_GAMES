@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CAZA EL PUNTO - MINGUELASGO</title>
+    <style>
+        body { 
+            background: #121212; 
+            color: white; 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden;
+        }
+        #game-container {
+            width: 90vw;
+            height: 70vh;
+            background: #1e1e1e;
+            border: 4px solid #fff;
+            position: relative;
+            cursor: crosshair;
+            border-radius: 10px;
+        }
+        .target {
+            width: 50px;
+            height: 50px;
+            background: #ff4757;
+            border-radius: 50%;
+            position: absolute;
+            transition: transform 0.1s;
+        }
+        .target:active { transform: scale(0.8); }
+        .stats { font-size: 24px; margin-bottom: 10px; }
+        .btn-salir {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: white;
+            color: black;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stats">PUNTOS: <span id="puntos">0</span> | TIEMPO: <span id="tiempo">30</span>s</div>
+    
+    <div id="game-container">
+        <div id="objetivo" class="target" onclick="sumarPunto()"></div>
+    </div>
+
+    <button class="btn-salir" onclick="location.href='../index.html'">VOLVER AL MENÚ</button>
+
+    <script>
+        let puntos = 0;
+        let tiempo = 30;
+        const objetivo = document.getElementById('objetivo');
+        const puntosTxt = document.getElementById('puntos');
+        const tiempoTxt = document.getElementById('tiempo');
+        const container = document.getElementById('game-container');
+
+        function moverObjetivo() {
+            const maxX = container.clientWidth - 50;
+            const maxY = container.clientHeight - 50;
+            
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            
+            objetivo.style.left = randomX + 'px';
+            objetivo.style.top = randomY + 'px';
+            
+            // Cambia de color aleatoriamente para que sea más loco
+            const colores = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#ffffff'];
+            objetivo.style.background = colores[Math.floor(Math.random() * colores.length)];
+        }
+
+        function sumarPunto() {
+            puntos++;
+            puntosTxt.innerText = puntos;
+            moverObjetivo();
+        }
+
+        // Cuenta atrás
+        const cuentaAtras = setInterval(() => {
+            tiempo--;
+            tiempoTxt.innerText = tiempo;
+            
+            if (tiempo <= 0) {
+                clearInterval(cuentaAtras);
+                alert("¡TIEMPO AGOTADO!\nPuntos totales: " + puntos);
+                location.reload();
+            }
+        }, 1000);
+
+        // Mover el punto solo cada 1.5 segundos si no le das
+        setInterval(() => {
+            moverObjetivo();
+        }, 1500);
+
+        moverObjetivo(); // Posición inicial
+    </script>
+</body>
+</html>
