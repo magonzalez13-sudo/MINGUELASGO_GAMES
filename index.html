@@ -206,24 +206,34 @@
     <footer>&copy; 2026 MINGUELASGO GAMES</footer>
 
     <script>
-        function checkVIP() {
-            const code = document.getElementById("vipInput").value.trim();
-            const error = document.getElementById("vipError");
+    // 1. Esto se ejecuta SOLO cuando escribes el código y das al botón
+    function checkVIP() {
+        const code = document.getElementById("vipInput").value.trim();
+        const error = document.getElementById("vipError");
 
-            if (code === "MINGUELASVIP") {   // ← tu código VIP
-                document.getElementById("vipSection").style.display = "block";
-                document.getElementById("vipBox").style.display = "none";
-                error.style.display = "none";
-                document.getElementById("vipSection").scrollIntoView({ behavior: "smooth" });
-            } else {
-                error.style.display = "block";
-            }
+        if (code === "MINGUELASVIP") {   
+            localStorage.setItem("vipAccess", "true"); // Guarda el acceso en el navegador
+            document.getElementById("vipSection").style.display = "block";
+            document.getElementById("vipBox").style.display = "none";
+            error.style.display = "none";
+            document.getElementById("vipSection").scrollIntoView({ behavior: "smooth" });
+        } else {
+            error.style.display = "block";
         }
+    }
 
-        document.getElementById("vipInput").addEventListener("keypress", function(e) {
-            if (e.key === "Enter") checkVIP();
-        });
-    </script>
+    // 2. Esto se ejecuta AUTOMÁTICAMENTE cada vez que recargas la página
+    window.onload = function() {
+        if (localStorage.getItem("vipAccess") === "true") {
+            document.getElementById("vipSection").style.display = "block";
+            document.getElementById("vipBox").style.display = "none";
+        }
+    };
+
+    document.getElementById("vipInput").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") checkVIP();
+    });
+</script>
 
 </body>
 </html>
