@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Extreme Car ULTRA PRO</title>
+<title>Extreme Car AAA</title>
 
 <style>
 body{
 margin:0;
+background:#000b12;
 overflow:hidden;
-background:linear-gradient(#061522,#000);
 font-family:Arial;
 color:white;
 text-align:center;
 }
 
 canvas{
-background:#001018;
 display:block;
 margin:auto;
+background:#001018;
 border:2px solid #00ffd5;
 }
 
@@ -37,134 +37,161 @@ position:fixed;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-background:#081824;
+background:#07131b;
 padding:20px;
 border-radius:10px;
 display:none;
 }
 button{
-padding:6px 10px;
-border:0;
-border-radius:6px;
 background:#00ffd5;
+border:0;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h2>🏎 ULTRA CAR NEXT LEVEL</h2>
+<h2>🏁 EXTREME CAR AAA STUDIO</h2>
 
 <canvas id="c" width="480" height="640"></canvas>
 
 <div id="ui">
-<div id="stats">P:0 | 💰0 | ⚡0</div>
+<div id="stats">P:0 💰0 ⚡0</div>
 <div><button onclick="toggle()">🎁</button></div>
 </div>
 
 <div class="panel" id="panel">
-<input id="code" placeholder="CODE"/>
+<input id="code"/>
 <button onclick="redeem()">OK</button>
 <p id="msg"></p>
 </div>
 
 <script>
 
+// ================= ENGINE AAA =================
 const c=document.getElementById("c");
 const ctx=c.getContext("2d");
 
 const W=480,H=640;
 
+let state="play";
+
+let time=0;
+let speedGlobal=2;
+let difficulty=0;
+
+// efectos
+let shake=0;
+let flash=0;
+
+// ================= PLAYER =================
 let player={
-x:240,
 lane:1,
+x:240,
 speed:0,
 nitro:100
 };
 
-let cars=[];
-let score=0;
-let money=0;
-let shake=0;
-let slow=0;
-
 const lanes=[120,240,360];
 
-// spawn más inteligente
-function spawn(){
-cars.push({
-lane:Math.floor(Math.random()*3),
-y:-100,
-speed:2+Math.random()*4,
-change:Math.random()<0.2
-});
-}
+// ================= TRAFFIC =================
+let cars=[];
 
-setInterval(spawn,700);
-
-// INPUT
+// ================= INPUT =================
 let keys={};
 onkeydown=e=>keys[e.key]=true;
 onkeyup=e=>keys[e.key]=false;
 
-// UPDATE
+// ================= SPAWN IA =================
+function spawn(){
+
+cars.push({
+lane:Math.floor(Math.random()*3),
+y:-120,
+speed:2+Math.random()*4,
+ai:true,
+danger:Math.random()<0.3
+});
+
+}
+
+// ================= UPDATE =================
 function update(){
 
-// lane smooth
+if(state!="play") return;
+
+time++;
+difficulty += 0.001;
+speedGlobal += 0.002 + difficulty*0.0005;
+
+// INPUT smooth
 if(keys["ArrowLeft"] && player.lane>0){
-player.lane--; keys["ArrowLeft"]=false;
-}
-if(keys["ArrowRight"] && player.lane<2){
-player.lane++; keys["ArrowRight"]=false;
+player.lane--;
+keys["ArrowLeft"]=false;
 }
 
+if(keys["ArrowRight"] && player.lane<2){
+player.lane++;
+keys["ArrowRight"]=false;
+}
+
+// smooth movement
 player.x += (lanes[player.lane]-player.x)*0.25;
 
-// nitro
+// NITRO AAA
 if(keys["ArrowUp"] && player.nitro>0){
-player.speed=Math.min(20,player.speed+0.5);
-player.nitro-=0.4;
+player.speed=Math.min(26,player.speed+0.7);
+player.nitro-=0.6;
 }else{
-player.speed=Math.max(0,player.speed-0.15);
-player.nitro+=0.05;
+player.speed=Math.max(0,player.speed-0.2);
+player.nitro+=0.04;
 }
 
-// enemies AI
+// AI TRAFFIC
 for(let c of cars){
 
-// cambio de carril IA
-if(c.change && Math.random()<0.01){
-c.lane += Math.random()<0.5?-1:1;
+// evasión inteligente
+if(Math.abs(c.y-520)<120 && c.ai){
+if(c.lane < player.lane && Math.random()<0.02) c.lane++;
+if(c.lane > player.lane && Math.random()<0.02) c.lane--;
 c.lane=Math.max(0,Math.min(2,c.lane));
 }
 
-c.y += c.speed + player.speed*0.6;
+c.y += (c.speed + speedGlobal + player.speed*0.5);
 
 // colisión
 if(Math.abs(c.y-520)<45 && c.lane==player.lane){
-shake=12;
-slow=10;
-player.speed*=0.3;
+
+shake=16;
+flash=10;
+player.speed*=0.35;
+
 }
+
 }
 
 // remove
-cars=cars.filter(c=>c.y<H+100);
+cars=cars.filter(c=>c.y<H+150);
 
-// score
-score += player.speed*0.12;
-money += 0.05;
+// spawn dynamic AAA
+if(Math.random()<0.02 + difficulty*0.01){
+spawn();
+}
 
-// effects
-if(shake>0) shake--;
-if(slow>0) slow--;
+// effects decay
+shake*=0.85;
+flash=Math.max(0,flash-1);
 
 // UI
 document.getElementById("stats").innerText=
-"P:"+Math.floor(score)+" 💰"+Math.floor(money)+" ⚡"+Math.floor(player.nitro);
+"P:"+Math.floor(time/10)+" 💰"+Math.floor(time/20)+" ⚡"+Math.floor(player.nitro);
+
 }
 
-// ROAD (pseudo 3D real)
+// ================= ROAD AAA =================
 function road(){
 
 ctx.fillStyle="#001018";
@@ -172,26 +199,38 @@ ctx.fillRect(0,0,W,H);
 
 let center=240;
 
-for(let i=0;i<40;i++){
+for(let i=0;i<60;i++){
 
-let y=i*20;
-let perspective = y/H;
+let y=i*12;
+let p=y/H;
 
-let width = 420 * (1-perspective);
-let x = center - width/2;
+// curva suave AAA
+let curve=Math.sin((time/100)+p*4)*90;
 
-ctx.fillStyle=i%2?"#0a1c24":"#0c2a36";
+let width=420*(1-p);
 
-ctx.fillRect(x,y,width,20);
+let x=center-width/2+curve;
+
+ctx.fillStyle=i%2?"#0a1c24":"#0e3342";
+
+ctx.fillRect(x,y,width,12);
+
 }
+
 }
 
-// DRAW
+// ================= DRAW AAA =================
 function draw(){
 
 if(shake>0){
 ctx.save();
-ctx.translate(Math.random()*10-5,Math.random()*10-5);
+ctx.translate((Math.random()-0.5)*shake,(Math.random()-0.5)*shake);
+}
+
+// flash impacto
+if(flash>0){
+ctx.fillStyle="rgba(255,255,255,0.08)";
+ctx.fillRect(0,0,W,H);
 }
 
 road();
@@ -202,14 +241,15 @@ ctx.fillRect(player.x-18,520,36,60);
 
 // enemies
 for(let c of cars){
-ctx.fillStyle="#ff3b3b";
+ctx.fillStyle=c.danger?"#ff3b3b":"#ff6a3b";
 ctx.fillRect(lanes[c.lane]-18,c.y,36,60);
 }
 
 if(shake>0) ctx.restore();
+
 }
 
-// LOOP
+// ================= LOOP =================
 function loop(){
 update();
 draw();
@@ -217,7 +257,10 @@ requestAnimationFrame(loop);
 }
 loop();
 
-// CODES
+// ================= SPAWN =================
+setInterval(spawn,800);
+
+// ================= CODES AAA =================
 function toggle(){
 document.getElementById("panel").style.display="block";
 }
@@ -226,16 +269,15 @@ function redeem(){
 let v=document.getElementById("code").value.toUpperCase();
 
 if(v=="BOOST"){
-player.speed=22;
+player.speed=28;
 msg("NITRO MAX");
 }
-else if(v=="MONEY"){
-money+=1000;
-msg("+1000");
+else if(v=="GOD"){
+difficulty+=2;
+msg("GOD MODE");
 }
-else if(v=="SLOWMO"){
-slow=30;
-msg("SLOWMO!");
+else if(v=="MONEY"){
+msg("+1000");
 }
 else{
 msg("FAIL");
