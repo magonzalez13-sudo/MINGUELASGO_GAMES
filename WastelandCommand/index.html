@@ -423,7 +423,8 @@ const RANDOM_EVENTS=[
 // ── SIGUIENTE DÍA ──────────────────────────────────
 function nextDay(){
   if(G.dead) return;
-  if($('event-panel').style.display!=='none') return;
+  // cerrar evento si sigue abierto por error
+  $('event-panel').style.display='none';
 
   G.day++;
   const s=Math.floor(((G.day-1)%80)/20); // cada 20 días cambia estación
