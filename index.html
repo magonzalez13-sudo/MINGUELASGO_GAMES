@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -68,6 +68,8 @@
         .play-btn:hover{ background:#fff; transform:translateY(-2px); }
         .vip-btn{ background:#ffd700; color:#000; }
         .vip-btn:hover{ background:#fff; }
+
+        /* ── VIP ── */
         #vipBox{
             position:fixed;
             right:20px;
@@ -122,11 +124,89 @@
         }
         .vip-card{ border-color:#ffd700; box-shadow:0 0 15px rgba(255,215,0,0.2); }
         .vip-card:hover{ box-shadow:0 0 35px #ffd700; }
+
+        /* ── DEV ── */
+        #devBox{
+            position:fixed;
+            left:20px;
+            bottom:20px;
+            width:260px;
+            background:rgba(0,0,0,0.96);
+            border:2px solid #cc44ff;
+            border-radius:15px;
+            padding:20px;
+            box-shadow:0 0 20px #cc44ff55;
+            text-align:center;
+            z-index:999;
+        }
+        #devBox h2{ color:#cc44ff; margin-bottom:10px; text-shadow:0 0 10px #cc44ff; }
+        #devBox p{ color:#666; margin-bottom:12px; }
+        #devInput{
+            width:100%;
+            padding:12px;
+            background:#000;
+            border:2px solid #cc44ff;
+            border-radius:8px;
+            color:#cc44ff;
+            text-align:center;
+            margin-bottom:12px;
+            outline:none;
+        }
+        #devBtn{
+            width:100%;
+            padding:12px;
+            background:transparent;
+            color:#cc44ff;
+            border:2px solid #cc44ff;
+            border-radius:8px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        #devBtn:hover{ background:#cc44ff; color:#000; }
+        #devError{ color:#ff4444; display:none; margin-top:10px; font-size:14px; }
+
+        #devSection{ display:none; width:100%; margin:60px 0 30px 0; }
+        #devSection h2{
+            color:#cc44ff;
+            text-shadow:0 0 15px #cc44ff, 0 0 30px #cc44ff;
+            margin-bottom:30px;
+            font-size:2em;
+        }
+        .dev-badge{
+            position:absolute;
+            top:-12px;
+            right:-12px;
+            background:linear-gradient(135deg,#cc44ff,#8800cc);
+            color:#fff;
+            padding:6px 14px;
+            border-radius:20px;
+            font-size:0.85em;
+            font-weight:bold;
+            box-shadow:0 0 10px #cc44ff;
+        }
+        .dev-card{
+            border-color:#cc44ff;
+            box-shadow:0 0 15px rgba(204,68,255,0.2);
+            background:#0d0015;
+        }
+        .dev-card:hover{
+            box-shadow:0 0 35px #cc44ff;
+            border-color:#ee88ff;
+        }
+        .dev-card h3{ color:#ee88ff; }
+        .dev-btn{
+            background:linear-gradient(135deg,#cc44ff,#8800cc);
+            color:#fff;
+        }
+        .dev-btn:hover{ background:#ee88ff; color:#000; }
+
         footer{ margin-top:50px; color:#444; font-size:0.8em; }
         @media(max-width:768px){
             h1{ font-size:2.2em; }
             .game-card{ width:100%; max-width:320px; }
-            #vipBox{ width:90%; left:5%; right:5%; bottom:15px; }
+            #vipBox{ width:90%; left:5%; right:5%; bottom:80px; }
+            #devBox{ width:90%; left:5%; right:5%; bottom:15px; }
         }
     </style>
 </head>
@@ -152,28 +232,26 @@
         </div>
 
         <div class="game-card">
-            <img src="_129269792_9167d823-b187-4d43-a1ff-9ba322027aaf.jpg" class="game-img" alt="Próximamente">
-            <h3>🚧 MIEXTRIX</h3>
+            <img src="_129269792_9167d823-b187-4d43-a1ff-9ba322027aaf.jpg" class="game-img" alt="Miextrix">
+            <h3>🧱 MIEXTRIX</h3>
             <p>Encaja los bloques y consigue puntos!</p>
             <button class="play-btn" onclick="location.href='Miextrix/index.html'">JUGAR AHORA</button>
         </div>
-        
-<div class="game-card">
-            <img src="VirusBroma.jpeg" class="game-img" alt="Próximamente">
+
+        <div class="game-card">
+            <img src="VirusBroma.jpeg" class="game-img" alt="?????">
             <h3>🚧 ?????</h3>
             <p>Cuidado!!</p>
             <button class="play-btn" onclick="location.href='VirusBroma/index.html'">JUGAR AHORA</button>
         </div>
-        
+
     </div>
-    
-</div>
+
     <!-- ZONA VIP -->
     <div id="vipSection">
         <h2>👑 CONTENIDO VIP</h2>
         <div class="container">
 
-            <!-- SURVIVAL -->
             <div class="game-card vip-card">
                 <span class="vip-badge">VIP</span>
                 <img src="images.jpg" class="game-img" alt="Survival Migui">
@@ -182,7 +260,6 @@
                 <button class="play-btn vip-btn" onclick="location.href='SurvivalVIP/index.html'">JUGAR AHORA</button>
             </div>
 
-            <!-- EXTREME CAR -->
             <div class="game-card vip-card">
                 <span class="vip-badge">VIP</span>
                 <img src="carrera.jpeg" class="game-img" alt="Extreme Car">
@@ -191,7 +268,6 @@
                 <button class="play-btn vip-btn" onclick="location.href='ExtremeCar/index.html'">JUGAR AHORA</button>
             </div>
 
-            <!-- SPACE RAID VIP (NUEVO) -->
             <div class="game-card vip-card">
                 <span class="vip-badge">VIP</span>
                 <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1200" class="game-img" alt="Space Raid">
@@ -199,17 +275,51 @@
                 <p>Elimina oleadas de enemigos alienígenas.<br>¡Jefes finales cada 50 niveles!</p>
                 <button class="play-btn vip-btn" onclick="location.href='GalagaVIP/index.html'">JUGAR AHORA</button>
             </div>
-            
+
             <div class="game-card vip-card">
                 <span class="vip-badge">VIP</span>
-                <img src="" class="game-img" alt="Space Raid">
-                <h3>👾 EL HEIST VIP: La Gran Estafa del Casino Lunar</h3>
-                <p>te va a impresionar.<br></p>
+                <img src="" class="game-img" alt="El Heist VIP">
+                <h3>🎰 EL HEIST VIP</h3>
+                <p>La Gran Estafa del Casino Lunar.<br>Te va a impresionar.</p>
                 <button class="play-btn vip-btn" onclick="location.href='EL HEIST VIP: La Gran Estafa del Casino Lunar/index.html'">JUGAR AHORA</button>
             </div>
-            
+
         </div>
-        
+    </div>
+
+    <!-- ZONA DEV -->
+    <div id="devSection">
+        <h2>⚙️ ZONA DESARROLLADOR</h2>
+        <div class="container">
+
+            <!-- JUEGO DEV 1 -->
+            <div class="game-card dev-card">
+                <span class="dev-badge">⚙️ DEV</span>
+                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200" class="game-img" alt="Dev Game 1">
+                <h3>🛠️ PROTOTYPE-01</h3>
+                <p>Prototipo en desarrollo.<br>Solo visible para el desarrollador.</p>
+                <button class="play-btn dev-btn" onclick="location.href='DevGame1/index.html'">ACCEDER</button>
+            </div>
+
+            <!-- JUEGO DEV 2 -->
+            <div class="game-card dev-card">
+                <span class="dev-badge">⚙️ DEV</span>
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200" class="game-img" alt="Dev Game 2">
+                <h3>🔬 TEST LAB</h3>
+                <p>Zona de pruebas de mecánicas.<br>Experimentos internos.</p>
+                <button class="play-btn dev-btn" onclick="location.href='DevGame2/index.html'">ACCEDER</button>
+            </div>
+
+            <!-- JUEGO DEV 3 — añade más aquí -->
+            <div class="game-card dev-card">
+                <span class="dev-badge">⚙️ DEV</span>
+                <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?q=80&w=1200" class="game-img" alt="Dev Game 3">
+                <h3>🧪 BUILD BETA</h3>
+                <p>Versión beta de un próximo juego.<br>En construcción activa.</p>
+                <button class="play-btn dev-btn" onclick="location.href='DevGame3/index.html'">ACCEDER</button>
+            </div>
+
+        </div>
     </div>
 
     <!-- CAJA VIP -->
@@ -221,40 +331,66 @@
         <div id="vipError">❌ Código incorrecto</div>
     </div>
 
+    <!-- CAJA DEV -->
+    <div id="devBox">
+        <h2>⚙️ DEV ACCESS</h2>
+        <p>Código de desarrollador</p>
+        <input type="password" id="devInput" placeholder="Código DEV">
+        <button id="devBtn">ENTRAR</button>
+        <div id="devError">❌ Código incorrecto</div>
+    </div>
+
     <footer>&copy; 2026 MINGUELASGO GAMES</footer>
 
     <script>
         const VIP_CODE = "MINGUELASVIP";
-        const vipBtn = document.getElementById("vipBtn");
-        const vipInput = document.getElementById("vipInput");
-        const vipError = document.getElementById("vipError");
-        const vipSection = document.getElementById("vipSection");
-        const vipBox = document.getElementById("vipBox");
+        const DEV_CODE = "MINGUELASDEV";   // ← cambia este código
 
+        // ── VIP ──────────────────────────────────────
         function checkVIP(){
-            const code = vipInput.value.trim();
+            const code = document.getElementById("vipInput").value.trim();
             if(code === VIP_CODE){
                 localStorage.setItem("vipAccess","true");
-                vipSection.style.display = "block";
-                vipBox.style.display = "none";
-                vipError.style.display = "none";
-                vipSection.scrollIntoView({ behavior:"smooth" });
+                document.getElementById("vipSection").style.display = "block";
+                document.getElementById("vipBox").style.display = "none";
+                document.getElementById("vipError").style.display = "none";
+                document.getElementById("vipSection").scrollIntoView({ behavior:"smooth" });
             } else {
-                vipError.style.display = "block";
-                vipInput.style.borderColor = "#ff4444";
-                setTimeout(()=>{ vipInput.style.borderColor = "#00ffcc"; }, 1000);
+                document.getElementById("vipError").style.display = "block";
+                document.getElementById("vipInput").style.borderColor = "#ff4444";
+                setTimeout(()=>{ document.getElementById("vipInput").style.borderColor = "#00ffcc"; }, 1000);
             }
         }
+        document.getElementById("vipBtn").addEventListener("click", checkVIP);
+        document.getElementById("vipInput").addEventListener("keypress", e=>{ if(e.key==="Enter") checkVIP(); });
 
-        vipBtn.addEventListener("click", checkVIP);
-        vipInput.addEventListener("keypress", function(e){
-            if(e.key === "Enter") checkVIP();
-        });
+        // ── DEV ──────────────────────────────────────
+        function checkDEV(){
+            const code = document.getElementById("devInput").value.trim();
+            if(code === DEV_CODE){
+                localStorage.setItem("devAccess","true");
+                document.getElementById("devSection").style.display = "block";
+                document.getElementById("devBox").style.display = "none";
+                document.getElementById("devError").style.display = "none";
+                document.getElementById("devSection").scrollIntoView({ behavior:"smooth" });
+            } else {
+                document.getElementById("devError").style.display = "block";
+                document.getElementById("devInput").style.borderColor = "#ff4444";
+                setTimeout(()=>{ document.getElementById("devInput").style.borderColor = "#cc44ff"; }, 1000);
+            }
+        }
+        document.getElementById("devBtn").addEventListener("click", checkDEV);
+        document.getElementById("devInput").addEventListener("keypress", e=>{ if(e.key==="Enter") checkDEV(); });
 
+        // ── AUTOLOGIN ─────────────────────────────────
         window.onload = function(){
             if(localStorage.getItem("vipAccess") === "true"){
-                vipSection.style.display = "block";
-                vipBox.style.display = "none";
+                document.getElementById("vipSection").style.display = "block";
+                document.getElementById("vipBox").style.display = "none";
+            }
+            if(localStorage.getItem("devAccess") === "true"){
+                document.getElementById("devSection").style.display = "block";
+                document.getElementById("devBox").style.display = "none";
             }
         };
     </script>
