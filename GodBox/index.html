@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>God Simulator</title>
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #111;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  display: block;
+  background: #4db8ff;
+}
+
+.ui {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  width: 240px;
+  backdrop-filter: blur(6px);
+}
+
+.ui h1 {
+  margin-top: 0;
+  color: gold;
+  font-size: 22px;
+}
+
+button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #555;
+}
+
+.stats {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+</style>
+</head>
+<body>
+
+<div class="ui">
+  <h1>🌍 GOD SIMULATOR</h1>
+
+  <button onclick="tool='human'">👤 Crear Humanos</button>
+  <button onclick="tool='tree'">🌲 Crear Árboles</button>
+  <button onclick="tool='fire'">🔥 Lanzar Fuego</button>
+  <button onclick="tool='meteor'">☄️ Meteorito</button>
+  <button onclick="tool='water'">💧 Agua</button>
+  <button onclick="tool='erase'">❌ Borrar</button>
+
+  <div class="stats">
+    Humanos: <span id="humans">0</span><br>
+    Árboles: <span id="trees">0</span><br>
+    Incendios: <span id="fires">0</span>
+  </div>
+</div>
+
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let tool = 'human';
+
+const humans = [];
+const trees = [];
+const fires = [];
+const waters = [];
+const meteors = [];
+
+class Human {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = 10;
+    this.speed = Math.random() * 1.5 + 0.5;
+    this.dir = Math.random() * Math.PI * 2;
+    this.health = 100;
+  }
+
+  update() {
+    this.x += Math.cos(this.dir) * this.speed;
+    this.y += Math.sin(this.dir) * this.speed;
+
+    if(Math.random() < 0.02) {
+      this.dir = Math.random() * Math.PI * 2;
+    }
+
+    if(this.x < 0 || this.x > canvas.width) this.dir += Math.PI;
+    if(this.y < 0 || this.y > canvas.height) this.dir += Math.PI;
+
+    fires.forEach(f => {
+      const dx = this.x - f.x;
+      const dy = this.y - f.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      if(dist < 40) {
+        this.health -= 0.5;
+      }
+    });
+  }
+
+  draw() {
+    ctx.fillStyle = this.health > 30 ? '#ffe0bd' : 'red';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(this.x-3, this.y-2, 2, 2);
+    ctx.fillRect(this.x+1, this.y-2, 2, 2);
+  }
+}
+
+class Tree {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = 20;
+    this.burning = false;
+  }
+
+  update() {
+    fires.forEach(f => {
+      const dx = this.x - f.x;
+      const dy = this.y - f.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      if(dist < 50) {
+        this.burning = true;
+      }
+    });
+
+    if(this.burning && Math.random() < 0.01) {
+      fires.push(new Fire(this.x, this.y));
+    }
+  }
+
+  draw() {
+    ctx.fillStyle = this.burning ? 'orange' : 'green';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = '#6b3e26';
+    ctx.fillRect(this.x-4, this.y+10, 8, 20);
+  }
+}
+
+class Fire {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.life = 300;
+  }
+
+  update() {
+    this.life--;
+  }
+
+  draw() {
+    ctx.fillStyle = `rgba(255,${Math.random()*150},0,0.8)`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 15 + Math.random()*10, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+class Water {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = 40;
+  }
+
+  draw() {
+    ctx.fillStyle = 'rgba(0,100,255,0.5)';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+class Meteor {
+  constructor(x) {
+    this.x = x;
+    this.y = -100;
+    this.speed = 8;
+    this.size = 30;
+  }
+
+  update() {
+    this.y += this.speed;
+
+    if(this.y > canvas.height) {
+      fires.push(new Fire(this.x, canvas.height-50));
+    }
+  }
+
+  draw() {
+    ctx.fillStyle = '#888';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'orange';
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(this.x-50, this.y-50);
+    ctx.stroke();
+  }
+}
+
+canvas.addEventListener('click', e => {
+  const x = e.clientX;
+  const y = e.clientY;
+
+  if(tool === 'human') humans.push(new Human(x,y));
+  if(tool === 'tree') trees.push(new Tree(x,y));
+  if(tool === 'fire') fires.push(new Fire(x,y));
+  if(tool === 'water') waters.push(new Water(x,y));
+  if(tool === 'meteor') meteors.push(new Meteor(x));
+
+  if(tool === 'erase') {
+    removeNearby(humans, x, y);
+    removeNearby(trees, x, y);
+    removeNearby(fires, x, y);
+  }
+});
+
+function removeNearby(arr, x, y) {
+  for(let i = arr.length-1; i >= 0; i--) {
+    const dx = arr[i].x - x;
+    const dy = arr[i].y - y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if(dist < 50) {
+      arr.splice(i,1);
+    }
+  }
+}
+
+function update() {
+  humans.forEach(h => h.update());
+  trees.forEach(t => t.update());
+  fires.forEach(f => f.update());
+  meteors.forEach(m => m.update());
+
+  for(let i = fires.length-1; i >=0; i--) {
+    if(fires[i].life <= 0) fires.splice(i,1);
+  }
+
+  for(let i = humans.length-1; i >=0; i--) {
+    if(humans[i].health <= 0) humans.splice(i,1);
+  }
+
+  waters.forEach(w => {
+    for(let i = fires.length-1; i >=0; i--) {
+      const dx = fires[i].x - w.x;
+      const dy = fires[i].y - w.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      if(dist < w.radius) {
+        fires.splice(i,1);
+      }
+    }
+  });
+
+  document.getElementById('humans').innerText = humans.length;
+  document.getElementById('trees').innerText = trees.length;
+  document.getElementById('fires').innerText = fires.length;
+}
+
+function drawGround() {
+  ctx.fillStyle = '#4caf50';
+  ctx.fillRect(0, canvas.height-120, canvas.width, 120);
+}
+
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  drawGround();
+
+  waters.forEach(w => w.draw());
+  trees.forEach(t => t.draw());
+  humans.forEach(h => h.draw());
+  fires.forEach(f => f.draw());
+  meteors.forEach(m => m.draw());
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+loop();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
