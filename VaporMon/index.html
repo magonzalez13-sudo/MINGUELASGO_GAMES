@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monstruos de Vapor - RPG</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #ff9900;
+            text-align: center;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 10px;
+        }
+        .pantalla-combate {
+            background-color: #2a2a2a;
+            border: 3px solid #444;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .contenedor-monstruos {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .bando {
+            width: 45%;
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #555;
+        }
+        .nombre {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #fff;
+        }
+        .info-adicional {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        .barra-contenedor {
+            background-color: #555;
+            height: 15px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .barra-hp {
+            background-color: #2ecc71;
+            height: 100%;
+            width: 100%;
+            transition: width 0.3s;
+        }
+        .barra-pv {
+            background-color: #3498db;
+            height: 100%;
+            width: 100%;
+            transition: width 0.3s;
+        }
+        .consola {
+            background-color: #000;
+            color: #00ff00;
+            padding: 15px;
+            height: 150px;
+            overflow-y: auto;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            border: 1px solid #333;
+        }
+        .controles {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        button {
+            background-color: #ff9900;
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 3px;
+            font-family: inherit;
+        }
+        button:hover {
+            background-color: #cc7a00;
+        }
+        button:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>MONSTRUOS DE VAPOR</h1>
+
+    <div class="pantalla-combate">
+        <div class="contenedor-monstruos">
+            <!-- Bando Aliado -->
+            <div class="bando">
+                <div class="nombre" id="aliado-nombre">Ratatuerca</div>
+                <div class="info-adicional" id="aliado-info">Nivel 14 | Tipo: Mecánico</div>
+                <div>HP: <span id="aliado-hp-texto">100/100</span></div>
+                <div class="barra-contenedor">
+                    <div class="barra-hp" id="aliado-hp-barra"></div>
+                </div>
+                <div>Vapor (PV): <span id="aliado-pv-texto">40/40</span></div>
+                <div class="barra-contenedor">
+                    <div class="barra-pv" id="aliado-pv-barra"></div>
+                </div>
+            </div>
+
+            <!-- Bando Enemigo -->
+            <div class="bando">
+                <div class="nombre" id="enemigo-nombre">Can Mecatrónico</div>
+                <div class="info-adicional" id="enemigo-info">Nivel 12 | Tipo: Eléctrico</div>
+                <div>HP: <span id="enemigo-hp-texto">90/90</span></div>
+                <div class="barra-contenedor">
+                    <div class="barra-hp" id="enemigo-hp-barra"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="consola" id="consola-texto">
+            ¡Un Can Mecatrónico salvaje apareció en el Desguace Oxidado!<br>
+            ¡Adelante, Ratatuerca! Elige una acción.
+        </div>
+
+        <div class="controles">
+            <button id="btn-ataque" onclick="ejecutarTurno('atacar')">Mordisco Rápido (0 PV)</button>
+            <button id="btn-habilidad" onclick="ejecutarTurno('habilidad')">Embestida Engranaje (15 PV)</button>
+            <button id="btn-capsula" onclick="ejecutarTurno('capsula')">Lanzar Cápsula Vacío</button>
+            <button id="btn-reiniciar" onclick="reiniciarJuego()" style="background-color: #d9534f; color: white;">Buscar Otro Monstruo</button>
+        </div>
+    </div>
+
+    <script>
+        // Datos del jugador y enemigo
+        let jugador = {
+            nombre: "Ratatuerca",
+            tipo: "Mecánico",
+            nivel: 14,
+            hpMax: 100,
+            hpActual: 100,
+            pvMax: 40,
+            pvActual: 40,
+            ataque: 18,
+            paralizado: false
+        };
+
+        let enemigo = {
+            nombre: "Can Mecatrónico",
+            tipo: "Eléctrico",
+            nivel: 12,
+            hpMax: 90,
+            hpActual: 90,
+            ataque: 15,
+            recargando: false
+        };
+
+        const consola = document.getElementById("consola-texto");
+
+        function actualizarInterfaz() {
+            // Actualizar textos
+            document.getElementById("aliado-hp-texto").innerText = `${jugador.hpActual}/${jugador.hpMax}`;
+            document.getElementById("aliado-pv-texto").innerText = `${jugador.pvActual}/${jugador.pvMax}`;
+            document.getElementById("enemigo-hp-texto").innerText = `${enemigo.hpActual}/${enemigo.hpMax}`;
+
+            // Actualizar barras visuales
+            const pctHpJugador = Math.max(0, (jugador.hpActual / jugador.hpMax) * 100);
+            const pctPvJugador = Math.max(0, (jugador.pvActual / jugador.pvMax) * 100);
+            const pctHpEnemigo = Math.max(0, (enemigo.hpActual / enemigo.hpMax) * 100);
+
+            document.getElementById("aliado-hp-barra").style.width = pctHpJugador + "%";
+            document.getElementById("aliado-pv-barra").style.width = pctPvJugador + "%";
+            document.getElementById("enemigo-hp-barra").style.width = pctHpEnemigo + "%";
+
+            // Desactivar botones si el juego terminó
+            if (jugador.hpActual <= 0 || enemigo.hpActual <= 0) {
+                document.getElementById("btn-ataque").disabled = true;
+                document.getElementById("btn-habilidad").disabled = true;
+                document.getElementById("btn-capsula").disabled = true;
+            } else {
+                document.getElementById("btn-ataque").disabled = false;
+                document.getElementById("btn-habilidad").disabled = (jugador.pvActual < 15);
+                document.getElementById("btn-capsula").disabled = false;
+            }
+        }
+
+        function escribirConsola(texto) {
+            consola.innerHTML += "<br>" + texto;
+            consola.scrollTop = consola.scrollHeight;
+        }
+
+        function calcularDano(base, atacanteTipo, defensorTipo) {
+            let multiplicador = 1.0;
+            // Eléctrico es fuerte contra Mecánico
+            if (atacanteTipo === "Eléctrico" && defensorTipo === "Mecánico") multiplicador = 1.5;
+            // Mecánico es débil contra Eléctrico
+            if (atacanteTipo === "Mecánico" && defensorTipo === "Eléctrico") multiplicador = 0.5;
+            
+            return {
+                dano: Math.floor(base * multiplicador),
+                critico: multiplicador
+            };
+        }
+
+        function ejecutarTurno(accionJugador) {
+            // --- TURNO DEL JUGADOR ---
+            if (accionJugador === 'atacar') {
+                let resultado = calcularDano(jugador.ataque, jugador.tipo, enemigo.tipo);
+                enemigo.hpActual = Math.max(0, enemigo.hpActual - resultado.dano);
+                escribirConsola(`> Ratatuerca usa Mordisco Rápido. Daño: ${resultado.dano}. (Poco efectivo contra Eléctrico)`);
+            } 
+            else if (accionJugador === 'habilidad') {
+                jugador.pvActual -= 15;
+                let resultado = calcularDano(jugador.ataque * 2, "Neutro", enemigo.tipo); 
+                enemigo.hpActual = Math.max(0, enemigo.hpActual - resultado.dano);
+                escribirConsola(`> Ratatuerca usa Embestida Engranaje consumiendo 15 PV. Daño: ${resultado.dano}.`);
+            } 
+            else if (accionJugador === 'capsula') {
+                escribirConsola("> Lanzas una Cápsula de Vacío...");
+                let saludFaltante = 1 - (enemigo.hpActual / enemigo.hpMax);
+                let azar = Math.random();
+                
+                // A menor vida del enemigo, más alta la probabilidad de captura
+                if (azar < (0.2 + saludFaltante * 0.6)) {
+                    escribirConsola("¡La cápsula vibra... 1... 2... 3... CAPTURADO! Has sumado al Can Mecatrónico a tu equipo.");
+                    enemigo.hpActual = 0;
+                    actualizarInterfaz();
+                    return;
+                } else {
+                    escribirConsola("¡La cápsula se rompió! El monstruo logró liberarse.");
+                }
+            }
+
+            actualizarInterfaz();
+
+            // Verificar si el enemigo cayó
+            if (enemigo.hpActual <= 0) {
+                escribirConsola("¡El Can Mecatrónico salvaje ha sido derrotado! Ganaste 45 EXP.");
+                return;
+            }
+
+            // --- TURNO DEL ENEMIGO ---
+            setTimeout(() => {
+                if (enemigo.recargando) {
+                    escribirConsola("El Can Mecatrónico está recuperando presión de vapor. No puede atacar.");
+                    enemigo.recargando = false;
+                    // El jugador recupera algo de vapor por turno
+                    jugador.pvActual = Math.min(jugador.pvMax, jugador.pvActual + 5);
+                    actualizarInterfaz();
+                    return;
+                }
+
+                // Inteligencia artificial simple: decide usar ataque fuerte aleatoriamente
+                let usarAtaqueFuerte = Math.random() > 0.5;
+
+                if (usarAtaqueFuerte) {
+                    let resultado = calcularDano(enemigo.ataque * 1.8, enemigo.tipo, jugador.tipo);
+                    jugador.hpActual = Math.max(0, jugador.hpActual - resultado.dano);
+                    escribirConsola(`¡El Can Mecatrónico usa Mordisco Voltaico! ¡Es súper efectivo! Daño: ${resultado.dano}.`);
+                    enemigo.recargando = true; // Se cansará el próximo turno
+                } else {
+                    let resultado = calcularDano(enemigo.ataque, "Neutro", jugador.tipo);
+                    jugador.hpActual = Math.max(0, jugador.hpActual - resultado.dano);
+                    escribirConsola(`¡El Can Mecatrónico usa Arañazo Metálico! Daño: ${resultado.dano}.`);
+                }
+
+                // El jugador recupera algo de vapor cada turno
+                jugador.pvActual = Math.min(jugador.pvMax, jugador.pvActual + 5);
+                actualizarInterfaz();
+
+                if (jugador.hpActual <= 0) {
+                    escribirConsola("¡Ratatuerca se ha quedado sin energía! Has sido transportado al taller de reparación más cercano.");
+                }
+            }, 800);
+        }
+
+        function reiniciarJuego() {
+            // Restablecer valores para una nueva partida rápida
+            jugador.hpActual = jugador.hpMax;
+            jugador.pvActual = jugador.pvMax;
+            
+            // Variar ligeramente el enemigo salvaje
+            const nombres = ["Can Mecatrónico", "Chatarra Viviente", "Halcón a Presión"];
+            enemigo.nombre = nombres[Math.floor(Math.random() * nombres.length)];
+            enemigo.hpMax = 80 + Math.floor(Math.random() * 30);
+            enemigo.hpActual = enemigo.hpMax;
+            enemigo.recargando = false;
+
+            document.getElementById("enemigo-nombre").innerText = enemigo.nombre;
+            document.getElementById("enemigo-info").innerText = `Nivel ${10 + Math.floor(Math.random() * 5)} | Tipo: Eléctrico`;
+
+            consola.innerHTML = `¡Un ${enemigo.nombre} salvaje apareció en el Desguace Oxidado!<br>¡Adelante, Ratatuerca! Elige una acción.`;
+            actualizarInterfaz();
+        }
+
+        // Ejecución inicial
+        actualizarInterfaz();
+    </script>
+</body>
+</html>
