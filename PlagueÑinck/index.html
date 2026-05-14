@@ -3,631 +3,690 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIO-APOCALYPSE: Simulador de Pandemias Supremo</title>
+    <title>Bio-Infección Extrema: Evolución Global</title>
     <style>
         :root {
-            --bg-dark: #07090e;
-            --panel-bg: #11161d;
-            --panel-border: #222d3a;
-            --accent-adn: #20f5ff;
-            --accent-infect: #ff3333;
-            --accent-dead: #7a0000;
-            --accent-cure: #2ecc71;
-            --text-main: #e2e8f0;
+            --bg-color: #06090e;
+            --panel-color: #121824;
+            --text-color: #ffc107;
+            --adn-color: #00f0ff;
+            --infect-color: #ff3838;
+            --heal-color: #2ed573;
+            --border-color: #232d42;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #ffffff;
             margin: 0;
             padding: 15px;
-            user-select: none;
-            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--infect-color);
+            margin: 5px 0;
+            font-size: 2.2em;
+            text-shadow: 0 0 15px rgba(255, 56, 56, 0.5);
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         /* Pantalla de Selección de Patógeno */
         #pantalla-inicio {
             position: fixed;
-            top:0; left:0; width:100vw; height:100vh;
-            background: rgba(7, 9, 14, 0.98);
-            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 7, 10, 0.95);
+            z-index: 1000;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: center;
         }
 
-        .selector-container {
-            display: flex;
-            gap: 20px;
-            margin-top: 30px;
-            max-width: 900px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .card-patogeno {
-            background: var(--panel-bg);
-            border: 2px solid var(--panel-border);
+        .selector-box {
+            background: var(--panel-color);
+            border: 2px solid var(--border-color);
+            padding: 30px;
             border-radius: 8px;
-            padding: 20px;
-            width: 240px;
             text-align: center;
+            max-width: 500px;
+        }
+
+        .pathogen-btn {
+            background: #1a2333;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 12px 20px;
+            margin: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: 0.3s;
+            font-weight: bold;
+            width: 80%;
+            transition: 0.2s;
         }
 
-        .card-patogeno:hover {
-            border-color: var(--accent-adn);
-            transform: translateY(-5px);
-            box-shadow: 0 0 15px rgba(32, 245, 255, 0.2);
+        .pathogen-btn:hover {
+            border-color: var(--adn-color);
+            background: #243147;
         }
 
-        /* Estructura Principal */
-        .header {
+        /* Consola de Noticias */
+        .ticker {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            color: #ffcc00;
+            padding: 12px;
+            width: 100%;
+            max-width: 1200px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-family: monospace;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* Marcadores */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: var(--panel-color);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .stat-card.adn { border-top: 4px solid var(--adn-color); }
+        .stat-card.inf { border-top: 4px solid var(--infect-color); }
+        .stat-card.cur { border-top: 4px solid var(--heal-color); }
+
+        .stat-val {
+            font-size: 1.7em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .adn .stat-val { color: var(--adn-color); }
+        .inf .stat-val { color: var(--infect-color); }
+        .cur .stat-val { color: var(--heal-color); }
+
+        /* Mapa de Nodos */
+        .map-container {
+            width: 100%;
+            max-width: 1200px;
+            background: #090d16;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+            gap: 10px;
+        }
+
+        .map-node {
+            background: #121721;
+            border: 1px solid #2d3748;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.8em;
+            transition: all 0.4s ease;
+        }
+
+        /* Contenedor Principal */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            gap: 15px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        @media (max-width: 950px) {
+            .main-container { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 18px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .panel h3 {
+            margin-top: 0;
+            font-size: 1.2em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .countries-list {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .country-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            padding: 10px 20px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        .titulo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent-infect);
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
-            margin: 0;
-        }
-
-        .ticker-container {
-            background: #000;
-            border: 1px solid #1f2421;
-            color: #f1c40f;
-            padding: 8px 15px;
-            font-family: monospace;
-            font-size: 0.9rem;
+            background: #172030;
+            padding: 8px 12px;
+            margin-top: 6px;
             border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .country-bar {
+            height: 4px;
+            background: var(--infect-color);
+            width: 0%;
+            transition: width 0.4s;
+            border-radius: 2px;
+            margin-top: 2px;
+        }
+
+        /* Menú de Botones de Pestañas */
+        .tabs {
+            display: flex;
+            gap: 6px;
             margin-bottom: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .grid-principal {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 15px;
-            height: calc(100vh - 160px);
-        }
-
-        @media (max-width: 1024px) {
-            .grid-principal { grid-template-columns: 1fr; height: auto; }
-        }
-
-        .columna-izquierda {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* Mapa Visual */
-        .mapa-mundial {
-            background: #0d1117;
-            border: 1px solid var(--panel-border);
-            border-radius: 6px;
-            position: relative;
-            flex-grow: 1;
-            min-height: 300px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 10px;
-            padding: 15px;
-        }
-
-        .zona-mapa {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 4px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 10px;
-            overflow: hidden;
-            transition: background 0.5s;
-        }
-
-        .zona-overlay-red {
-            position: absolute;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(255, 51, 51, 0);
-            mix-blend-mode: color-burn;
-            transition: background 0.5s;
-            pointer-events: none;
-        }
-
-        .zona-info {
-            position: relative;
-            z-index: 2;
-            font-size: 0.8rem;
-            background: rgba(0,0,0,0.6);
-            padding: 5px;
-            border-radius: 3px;
-        }
-
-        /* Burbujas de ADN Clínicas */
-        .burbuja-adn {
-            position: absolute;
-            width: 35px;
-            height: 35px;
-            background: radial-gradient(circle, var(--accent-adn) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
-            animation: pulsoAdn 1.5s infinite alternate;
-            cursor: pointer;
-            z-index: 99;
-            border: 2px solid #fff;
-            box-shadow: 0 0 10px var(--accent-adn);
-        }
-
-        @keyframes pulsoAdn {
-            0% { transform: scale(0.9); opacity: 0.8; }
-            100% { transform: scale(1.2); opacity: 1; }
-        }
-
-        /* Paneles Estadísticos e Interfaz Derecha */
-        .panel-control {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 6px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stats-barra {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .mini-card {
-            background: #0d1117;
-            border: 1px solid var(--panel-border);
-            padding: 8px;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-
-        .mini-card h5 { margin: 0; color: #8b949e; font-size: 0.75rem;}
-        .mini-card p { margin: 5px 0 0 0; font-size: 1.1rem; font-weight: bold;}
-
-        /* Pestañas de Mutación Avanzadas */
-        .pestanas {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 8px;
-            background: #161b22;
-            border: 1px solid var(--panel-border);
-            color: #8b949e;
+            background: #1a2333;
+            border: 1px solid var(--border-color);
+            color: #a0aec0;
+            padding: 10px;
             cursor: pointer;
+            font-size: 0.85em;
             font-weight: bold;
-            font-size: 0.8rem;
             border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: #243147;
         }
 
         .tab-btn.active {
-            background: var(--accent-adn);
-            color: #000;
-            border-color: var(--accent-adn);
+            background: var(--text-color);
+            color: #000000;
+            border-color: var(--text-color);
         }
 
-        .lista-mejoras {
-            flex-grow: 1;
+        /* Lista de Mejoras Reconstruida */
+        .upgrade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 380px;
             overflow-y: auto;
-            max-height: 400px;
             padding-right: 5px;
         }
 
-        .mejora-item {
-            background: #161b22;
-            border: 1px solid var(--panel-border);
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
+        .upgrade-item {
+            background: #161f30;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
 
-        .mejora-item.bloqueada { opacity: 0.4; }
-        .mejora-item.comprada { border-color: var(--accent-cure); background: #0f1c14;}
+        .upgrade-item.bought {
+            border-left: 4px solid var(--heal-color);
+            background: #111824;
+            opacity: 0.7;
+        }
 
-        .mejora-texto h4 { margin: 0 0 3px 0; font-size: 0.9rem; }
-        .mejora-texto p { margin: 0; font-size: 0.75rem; color: #8b949e; }
+        .upgrade-info {
+            flex: 1;
+        }
 
-        .btn-evolucionar {
-            background: #238636;
-            color: white;
+        .upgrade-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.95em;
+            color: #ffffff;
+        }
+
+        .upgrade-info p {
+            margin: 0;
+            font-size: 0.8em;
+            color: #a0aec0;
+            line-height: 1.2;
+        }
+
+        /* El Botón de Compra */
+        .buy-btn {
+            background: var(--adn-color);
+            color: #000000;
             border: none;
-            padding: 6px 10px;
+            padding: 10px 14px;
             border-radius: 4px;
-            font-size: 0.8rem;
             font-weight: bold;
             cursor: pointer;
-        }
-        .btn-evolucionar:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
-
-        /* Sistema de Eventos Pop-up */
-        .modal-evento {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: #161b22;
-            border: 2px solid var(--accent-infect);
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            padding: 20px;
-            border-radius: 8px;
-            z-index: 10000;
-            max-width: 450px;
-            width: 90%;
-            display: none;
+            font-size: 0.8em;
+            min-width: 85px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s, background 0.2s;
         }
 
-        .modal-evento h3 { margin-top: 0; color: var(--accent-infect); }
-        .modal-evento button {
+        .buy-btn:hover:not(:disabled) {
+            transform: scale(1.03);
+            background: #00b8d4;
+        }
+
+        .buy-btn:disabled {
+            background: #2d3748;
+            color: #718096;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .control-btn {
             width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            background: var(--panel-border);
-            border: 1px solid #30363d;
-            color: white;
+            padding: 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 4px;
-            text-align: left;
-            font-size: 0.85rem;
+            background: #e53e3e;
+            color: white;
+            margin-top: 15px;
+            font-size: 0.9em;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-        .modal-evento button:hover { background: #30363d; }
-
-        /* Barras de Progreso Inferiores */
-        .barra-global-contenedor {
-            background: #21262d;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 5px;
+        
+        .control-btn#pauseResumeBtn {
+            background: #3182ce;
         }
-        .barra-global-progreso { height: 100%; width: 0%; transition: width 0.4s; }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA SELECCIÓN -->
+    <!-- PANTALLA SELECCIÓN INICIAL -->
     <div id="pantalla-inicio">
-        <h1 style="color:var(--accent-infect); margin:0;">BIO-APOCALYPSE</h1>
-        <p style="color:#8b949e;">Selecciona el agente patógeno para iniciar la simulación</p>
-        <div class="selector-container">
-            <div class="card-patogeno" onclick="iniciarJuego('Bacteria')">
-                <h3 style="color:#58a6ff;">🧫 Bacteria</h3>
-                <p style="font-size:0.8rem; color:#8b949e;">Equilibrada y resistente. Mutaciones controladas estables.</p>
-            </div>
-            <div class="card-patogeno" onclick="iniciarJuego('Virus')">
-                <h3 style="color:#ca1212;">🧬 Virus</h3>
-                <p style="font-size:0.8rem; color:#8b949e;">Inestable y caótico. Muta síntomas al azar por sí solo continuamente.</p>
-            </div>
-            <div class="card-patogeno" onclick="iniciarJuego('Bio-Arma')">
-                <h3 style="color:#e3b341;">☣️ Bio-Arma</h3>
-                <p style="font-size:0.8rem; color:#8b949e;">Letalidad intrínseca que aumenta con el tiempo. Debe contenerse para no autodestruirse.</p>
-            </div>
+        <div class="selector-box">
+            <h2 style="color: var(--infect-color); margin-top:0;">SELECCIONA TU PATÓGENO</h2>
+            <p style="color:#a0aec0; font-size:0.9em; margin-bottom:20px;">Cada organismo posee rasgos genéticos únicos.</p>
+            <button class="pathogen-btn" onclick="seleccionarPatogeno('Bacteria')">🧫 Bacteria (Equilibrada - ADN extra inicial)</button>
+            <button class="pathogen-btn" onclick="seleccionarPatogeno('Virus')">🧬 Virus (Mutaciones espontáneas rápidas)</button>
+            <button class="pathogen-btn" onclick="seleccionarPatogeno('Parásito')">🐛 Parásito (Invisibilidad natural alta)</button>
         </div>
     </div>
 
-    <!-- NOTIFICACIONES -->
-    <div class="ticker-container" id="ticker">INFO: Selecciona un patógeno para activar la red satelital OMS...</div>
+    <h1>BIO-INFECCIÓN EXTREMA</h1>
+    <div class="subtitle" id="tipoPatogenoTexto">Cargando organismo genético...</div>
 
-    <!-- IU PRINCIPAL -->
-    <div class="header">
-        <div class="titulo" id="txt-nombre-patogeno">PATÓGENO: No asignado</div>
-        <div style="display:flex; gap:15px; font-size:0.9rem;">
-            <span>📅 Día: <strong id="txt-dias">0</strong></span>
-            <button onclick="togglePausa()" id="btn-pausa" style="background:none; border:1px solid #30363d; color:white; cursor:pointer; border-radius:3px;">⏸️ Pausa</button>
-        </div>
+    <div class="ticker" id="newsTicker">Buscando paciente cero en Europa Occidental...</div>
+
+    <div class="stats-grid">
+        <div class="stat-card adn">🧬 PUNTOS ADN<div class="stat-val" id="statAdn">12</div></div>
+        <div class="stat-card inf">🦠 INFECTADOS GLOBALES<div class="stat-val" id="statInfected">1</div></div>
+        <div class="stat-card">💀 BAJAS TOTALES<div class="stat-val" id="statDead" style="color:var(--infect-color);">0</div></div>
+        <div class="stat-card cur">🧪 INVESTIGACIÓN CURA<div class="stat-val" id="statCura">0%</div></div>
     </div>
 
-    <div class="grid-principal">
-        <div class="columna-izquierda">
-            <!-- MAPA GRID -->
-            <div class="mapa-mundial" id="mapa">
-                <!-- Inyectado por JS -->
-            </div>
-            
-            <!-- BARRAS GENERALES -->
-            <div class="panel-control" style="padding:10px;">
-                <div style="font-size:0.75rem; display:flex; justify-content:space-between;">
-                    <span>Infección Global</span><span id="lbl-pct-inf">0%</span>
-                </div>
-                <div class="barra-global-contenedor"><div id="bar-inf" class="barra-global-progreso" style="background:var(--accent-infect);"></div></div>
-                
-                <div style="font-size:0.75rem; display:flex; justify-content:space-between; margin-top:5px;">
-                    <span>Progreso de la Cura mundial</span><span id="lbl-pct-cur">0%</span>
-                </div>
-                <div class="barra-global-contenedor"><div id="bar-cur" class="barra-global-progreso" style="background:var(--accent-cure);"></div></div>
-            </div>
-        </div>
-
-        <!-- PANEL INTERACTIVO DERECHO -->
-        <div class="panel-control">
-            <div class="stats-barra">
-                <div class="mini-card" style="border-top: 3px solid var(--accent-adn);">
-                    <h5>🧬 ADN</h5>
-                    <p id="stat-adn" style="color:var(--accent-adn);">0</p>
-                </div>
-                <div class="mini-card" style="border-top: 3px solid var(--accent-infect);">
-                    <h5>🦠 Infectados</h5>
-                    <p id="stat-inf" style="font-size:0.9rem;">0</p>
-                </div>
-                <div class="mini-card" style="border-top: 3px solid #7a0000;">
-                    <h5>💀 Muertos</h5>
-                    <p id="stat-dead" style="font-size:0.9rem; color:#ff6b6b;">0</p>
-                </div>
-                <div class="mini-card" style="border-top: 3px solid #8b949e;">
-                    <h5>🌍 Sanos</h5>
-                    <p id="stat-sanos" style="font-size:0.8rem; color:#8b949e;">0</p>
-                </div>
-            </div>
-
-            <!-- ÁRBOL MATRIZ DE MUTACIÓN -->
-            <div class="pestanas">
-                <button class="tab-btn active" onclick="cambiarTab('trans')">Transmisión</button>
-                <button class="tab-btn" onclick="cambiarTab('sint')">Síntomas</button>
-                <button class="tab-btn" onclick="cambiarTab('habil')">Habilidades</button>
-            </div>
-            <div class="lista-mejoras" id="contenedor-mejoras">
-                <!-- Inyectado por JS -->
-            </div>
-        </div>
+    <!-- MAPA VISUAL REACTIVO -->
+    <div class="map-container">
+        <div class="map-grid" id="mapGridContainer"></div>
     </div>
 
-    <!-- POP-UP MODAL EVENTOS -->
-    <div class="modal-evento" id="modal-evento">
-        <h3 id="evt-titulo">Evento crítico</h3>
-        <p id="evt-desc" style="font-size:0.85rem; color:#c9d1d9;"></p>
-        <div id="evt-opciones"></div>
+    <div class="main-container">
+        <!-- GEO-ANÁLISIS -->
+        <div class="panel">
+            <h3>🌍 Análisis de Expansión Geográfica</h3>
+            <div class="countries-list" id="countriesContainer"></div>
+            <button class="control-btn" id="pauseResumeBtn">⏸️ PAUSAR SIMULACIÓN</button>
+        </div>
+
+        <!-- INGENIERÍA GENÉTICA (BOTONES INTERACTIVOS) -->
+        <div class="panel">
+            <h3>🧬 Matriz de Mutación Mecánica</h3>
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-trans">Transmisión</button>
+                <button class="tab-btn" id="tab-sintoma">Síntomas</button>
+                <button class="tab-btn" id="tab-habilidad">Resistencias</button>
+            </div>
+            <div class="upgrade-list" id="upgradesContainer">
+                <!-- Los botones y mejoras aparecen aquí de forma fija y automatizada -->
+            </div>
+        </div>
     </div>
 
     <script>
-        // DATA DE REGIONES MUNDIALES (MODELO COMPLEJO)
-        let regiones = [
-            { id: "eur_sur", nombre: "Europa del Sur", pob: 150000000, inf: 0, dead: 0, clima: "templado", riqueza: "alta", puertos: true, aeropuertos: true, fronterasCerradas: false, hospitalColapso: false },
-            { id: "eur_nor", nombre: "Europa del Norte", pob: 100000000, inf: 0, dead: 0, clima: "frio", riqueza: "alta", puertos: true, aeropuertos: true, fronterasCerradas: false, hospitalColapso: false },
-            { id: "america_nor", nombre: "Norteamérica", pob: 370000000, inf: 0, dead: 0, clima: "templado", riqueza: "alta", puertos: true, aeropuertos: true, fronterasCerradas: false, hospitalColapso: false },
-            { id: "america_sur", nombre: "Sudamérica", pob: 430000000, inf: 0, dead: 0, clima: "calido", riqueza: "media", puertos: true, aeropuertos: true, fronterasCerradas: false, hospitalColapso: false },
-            { id: "africa_sub", nombre: "África Subsahariana", pob: 1100000000, inf: 0, dead: 0, clima: "calido", riqueza: "baja", puertos: true, aeropuertos: false, fronterasCerradas: false, hospitalColapso: false },
-            { id: "asia_or", nombre: "Asia Oriental", pob: 1600000000, inf: 0, dead: 0, clima: "templado", riqueza: "alta", puertos: true, aeropuertos: true, fronterasCerradas: false, hospitalColapso: false },
-            { id: "oriente_med", nombre: "Oriente Medio", pob: 400000000, inf: 0, dead: 0, clima: "calido", riqueza: "media", puertos: false, aeropuertos: true, fronterasCerradas: false, hospitalColapso: false },
-            { id: "groenlandia", nombre: "Groenlandia Extrema", pob: 60000, inf: 0, dead: 0, clima: "frio", riqueza: "alta", puertos: true, aeropuertos: false, fronterasCerradas: false, hospitalColapso: false }
+        const paises = [
+            { id: "esp", nombre: "España", pob: 47000000, inf: 1, muertos: 0, clima: "templado", rico: true, con: 8 },
+            { id: "gbr", nombre: "Reino Unido", pob: 67000000, inf: 0, muertos: 0, clima: "frio", rico: true, con: 9 },
+            { id: "rws", nombre: "Rusia", pob: 144000000, inf: 0, muertos: 0, clima: "frio", rico: false, con: 5 },
+            { id: "bra", nombre: "Brasil", pob: 214000000, inf: 0, muertos: 0, clima: "calido", rico: false, con: 6 },
+            { id: "zaf", nombre: "Sudáfrica", pob: 60000000, inf: 0, muertos: 0, clima: "calido", rico: false, con: 5 },
+            { id: "usa", nombre: "EE.UU.", pob: 332000000, inf: 0, muertos: 0, clima: "templado", rico: true, con: 10 },
+            { id: "chn", nombre: "China", pob: 1412000000, inf: 0, muertos: 0, clima: "templado", rico: true, con: 9 },
+            { id: "grl", nombre: "Groenlandia", pob: 56000, inf: 0, muertos: 0, clima: "frio", rico: true, con: 1 }
         ];
 
-        // MATRIZ COMPLETA DE MEJORAS EVOLUTIVAS
-        let mejoras = [
-            // TRANSMISIONES
-            { id: "tr_aire1", cat: "trans", nombre: "Aerosoles I", desc: "El patógeno viaja por el aire en partículas secas. ++Contagio en zonas templadas.", costo: 6, comprado: false },
-            { id: "tr_aire2", cat: "trans", nombre: "Aerosoles II", desc: "Rompe los filtros de aire de los aviones comerciales. Desbloquea saltos de largo alcance.", costo: 12, comprado: false },
-            { id: "tr_agua1", cat: "trans", nombre: "Hidrofilia I", desc: "Sobrevive en agua estancada. ++Contagio en barcos y climas húmedos húmedos.", costo: 7, comprado: false },
-            { id: "tr_vector", nombre: "Zoonosis Vectorial", cat: "trans", desc: "Transmisión masiva mediante picaduras de mosquitos. Devastador en regiones cálidas.", costo: 15, comprado: false },
+        const mejoras = [
+            { id: "t1", cat: "trans", nombre: "Aerosoles I", desc: "Aumenta dispersión en aeropuertos.", adn: 6, comprado: false },
+            { id: "t2", cat: "trans", nombre: "Intercambio Pluvial", desc: "Contagio masivo por buques comerciales.", adn: 6, comprado: false },
+            { id: "t3", cat: "trans", nombre: "Zoonosis (Aves)", desc: "Traspasa fronteras cerradas aleatoriamente.", adn: 10, comprado: false },
             
-            // SÍNTOMAS
-            { id: "st_estn", cat: "sint", nombre: "Estornudo espontáneo", desc: "Aumenta drásticamente la infectividad ambiental básica.", costo: 4, comprado: false, infectividad: 1.5, gravedad: 2, letalidad: 0 },
-            { id: "st_hemor", cat: "sint", nombre: "Lisis Cutánea (Lesiones)", desc: "Hemorragias externas cutáneas visibles. Infección extrema.", costo: 14, comprado: false, infectividad: 3.0, gravedad: 18, letalidad: 2 },
-            { id: "st_pulmon", cat: "sint", nombre: "Edema Pulmonar masivo", desc: "Los pulmones se llenan de fluido. Letalidad moderada pero constante.", costo: 22, comprado: false, infectividad: 1.2, gravedad: 45, letalidad: 15 },
-            { id: "st_necrosis", cat: "sint", nombre: "Necrosis Sistémica", desc: "Colapso total de tejidos corporales. Letalidad destructiva extrema.", costo: 38, comprado: false, infectividad: 0.5, gravedad: 90, letalidad: 65 },
-
-            // HABILIDADES
-            { id: "hb_frio1", cat: "habil", nombre: "Crioresistencia", desc: "Fortalece las capas celulares externas. Permite invadir zonas frías.", costo: 9, comprado: false },
-            { id: "hb_farmac1", cat: "habil", nombre: "Inmunidad Antibiótica", desc: "Neutraliza tratamientos estándar. Clave para superar la riqueza médica.", costo: 13, comprado: false },
-            { id: "hb_mut_gen", cat: "habil", nombre: "Deriva Antigénica", desc: "Reestructura el núcleo del patógeno. Ralentiza el avance de la cura a la mitad.", costo: 20, comprado: false }
+            { id: "s1", cat: "sintoma", nombre: "Tos Seca", desc: "Contagio leve. Baja visibilidad ante la OMS.", adn: 4, comprado: false, letalidad: 0, visibilidad: 2 },
+            { id: "s2", cat: "sintoma", nombre: "Hemofilia", desc: "Multiplica la tasa de contagio y letalidad.", adn: 10, comprado: false, letalidad: 4, visibilidad: 15 },
+            { id: "s3", cat: "sintoma", nombre: "Necrosis Sistémica", desc: "Letalidad apocalíptica. Sabotea la cura.", adn: 26, comprado: false, letalidad: 25, visibilidad: 75 },
+            
+            { id: "h1", cat: "habilidad", nombre: "Crio-Estabilidad", desc: "Indispensable para avanzar en climas helados.", adn: 8, comprado: false },
+            { id: "h2", cat: "habilidad", nombre: "Inmuno-Resistencia", desc: "Anula defensas médicas de países ricos.", adn: 12, comprado: false }
         ];
 
-        // VARIABLES DE JUEGO
-        let tipoPatogeno = "";
-        let adn = 15;
-        let dias = 0;
-        let juegoPausado = false;
-        let tabActual = "trans";
-        let totalPoblacionMundial = regiones.reduce((acc, r) => acc + r.pob, 0);
+        let adnActual = 12;
         let curaProgreso = 0;
-        let curaArrancada = false;
-        let factorBioArmaLetalidad = 0;
+        let curaActiva = false;
+        let juegoPausado = false;
+        let currentTab = 'trans';
+        let tipoPatogeno = 'Bacteria';
+        const totalMundial = paises.reduce((acc, p) => acc + p.pob, 0);
 
-        // INICIALIZACIÓN DE JUEGO
-        function iniciarJuego(tipo) {
+        function seleccionarPatogeno(tipo) {
             tipoPatogeno = tipo;
             document.getElementById("pantalla-inicio").style.display = "none";
-            document.getElementById("txt-nombre-patogeno").innerText = `PATÓGENO: ${tipo.toUpperCase()}`;
+            document.getElementById("tipoPatogenoTexto").innerText = `Organismo activo: ${tipoPatogeno}`;
             
-            // Infección del paciente cero en una región aleatoria
-            let indiceInicial = Math.floor(Math.random() * regiones.length);
-            regiones[indiceInicial].inf = 50; 
+            if(tipo === 'Bacteria') adnActual = 18; // Bono de inicio
+            if(tipo === 'Parásito') pushNoticia("El parásito se oculta perfectamente de los primeros escaneos médicos.");
             
-            document.getElementById("ticker").innerText = `☣️ ALERTA: Mutación de tipo [${tipo}] identificada de forma aislada en ${regiones[indiceInicial].nombre}.`;
-            
-            construirMapaVisual();
-            actualizarInterfaz();
-            
-            // Loop principal (Ejecuta cada 800ms = 1 Día ficticio)
-            setInterval(buclePrincipal, 800);
-            setInterval(crearBurbujaAdnAleatoria, 6000);
+            init();
         }
 
-        function construirMapaVisual() {
-            let mapa = document.getElementById("mapa");
-            mapa.innerHTML = "";
-            regiones.forEach(r => {
-                let div = document.createElement("div");
-                div.className = "zona-mapa";
-                div.id = `mapa-${r.id}`;
-                div.innerHTML = `
-                    <div class="zona-overlay-red" id="overlay-${r.id}"></div>
-                    <div class="zona-info">
-                        <strong>${r.nombre}</strong><br>
-                        <span style="font-size:0.7rem; color:#aaa;">🧪 Clima: ${r.clima}</span><br>
-                        🦠 <span id="inf-${r.id}">0</span> | 💀 <span id="dead-${r.id}">0</span>
-                    </div>
-                `;
-                mapa.appendChild(div);
+        function init() {
+            renderMapaInicial();
+            renderPaises();
+            renderMejoras();
+            
+            document.getElementById("pauseResumeBtn").onclick = togglePausa;
+            document.getElementById("tab-trans").onclick = () => switchTab('trans');
+            document.getElementById("tab-sintoma").onclick = () => switchTab('sintoma');
+            document.getElementById("tab-habilidad").onclick = () => switchTab('habilidad');
+
+            setInterval(bucleJuego, 1000);
+        }
+
+        function renderMapaInicial() {
+            const container = document.getElementById("mapGridContainer");
+            container.innerHTML = "";
+            paises.forEach(p => {
+                const node = document.createElement("div");
+                node.className = "map-node";
+                node.id = `map-node-${p.id}`;
+                node.innerHTML = `<strong>${p.nombre}</strong><br><span id="map-status-${p.id}" style="color:#718096">Inmune</span>`;
+                container.appendChild(node);
             });
         }
 
-        function cambiarTab(tab) {
-            tabActual = tab;
-            let btns = document.querySelectorAll(".tab-btn");
-            btns.forEach(b => b.classList.remove("active"));
-            event.target.classList.add("active");
-            renderizarListaMejoras();
+        function renderPaises() {
+            const container = document.getElementById("countriesContainer");
+            container.innerHTML = "";
+            paises.forEach(p => {
+                let pct = p.pob > 0 ? ((p.inf / p.pob) * 100).toFixed(2) : 0;
+                const row = document.createElement("div");
+                row.innerHTML = `
+                    <div class="country-row">
+                        <span><strong>${p.nombre}</strong> <span style="font-size:0.8em;color:#718096;">(${p.clima})</span></span>
+                        <span>🦠 ${formatNum(p.inf)} | 💀 ${formatNum(p.muertos)}</span>
+                    </div>
+                    <div class="country-bar" style="width: ${Math.min(pct, 100)}%"></div>
+                `;
+                container.appendChild(row);
+
+                // Modificar color en mapa integrado
+                const mapNode = document.getElementById(`map-node-${p.id}`);
+                const mapStatus = document.getElementById(`map-status-${p.id}`);
+                if (mapNode && mapStatus) {
+                    if (p.muertos >= p.pob * 0.95) {
+                        mapNode.style.background = "#2a0808";
+                        mapNode.style.borderColor = "var(--infect-color)";
+                        mapStatus.innerText = "☠️ Colapsado";
+                        mapStatus.style.color = "var(--infect-color)";
+                    } else if (p.inf > 0) {
+                        let opacidad = Math.min((p.inf / p.pob) + 0.2, 1);
+                        mapNode.style.background = `rgba(229, 62, 62, ${opacidad * 0.35})`;
+                        mapNode.style.borderColor = "#e53e3e";
+                        mapStatus.innerText = `Infectado ${pct}%`;
+                        mapStatus.style.color = "#ff8a8a";
+                    }
+                }
+            });
         }
 
-        function renderizarListaMejoras() {
-            let cont = document.getElementById("contenedor-mejoras");
-            cont.innerHTML = "";
-            let filtradas = mejoras.filter(m => m.cat === tabActual);
+        function renderMejoras() {
+            const container = document.getElementById("upgradesContainer");
+            container.innerHTML = "";
             
+            const filtradas = mejoras.filter(m => m.cat === currentTab);
             filtradas.forEach(m => {
-                let div = document.createElement("div");
-                div.className = `mejora-item ${m.comprado ? 'comprada' : ''}`;
-                div.innerHTML = `
-                    <div class="mejora-texto">
+                const item = document.createElement("div");
+                item.className = `upgrade-item ${m.comprado ? 'bought' : ''}`;
+                
+                item.innerHTML = `
+                    <div class="upgrade-info">
                         <h4>${m.nombre}</h4>
-                        <p>${m.desc} (Coste: ${m.costo} ADN)</p>
+                        <p>${m.desc}</p>
                     </div>
-                    <button class="btn-evolucionar" ${m.comprado || adn < m.costo ? 'disabled' : ''} onclick="evolucionarMejora('${m.id}')">
-                        ${m.comprado ? '✓' : 'Mutar'}
+                    <button class="buy-btn" ${m.comprado || adnActual < m.adn ? 'disabled' : ''} id="btn-${m.id}">
+                        ${m.comprado ? 'ADQUIRIDO' : `${m.adn} ADN`}
                     </button>
                 `;
-                cont.appendChild(div);
+                container.appendChild(item);
+
+                // Vinculación directa y forzada del evento de click al botón generado
+                const btn = document.getElementById(`btn-${m.id}`);
+                if (!m.comprado && adnActual >= m.adn) {
+                    btn.onclick = () => comprarMejora(m.id);
+                }
             });
         }
 
-        function evolucionarMejora(id) {
-            let m = mejoras.find(x => x.id === id);
-            if(m && adn >= m.costo && !m.comprado) {
-                adn -= m.costo;
+        function switchTab(tab) {
+            currentTab = tab;
+            ['trans', 'sintoma', 'habilidad'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.remove("active");
+            });
+            document.getElementById(`tab-${tab}`).classList.add("active");
+            renderMejoras();
+        }
+
+        function comprarMejora(id) {
+            const m = mejoras.find(x => x.id === id);
+            if (m && adnActual >= m.adn && !m.comprado) {
+                adnActual -= m.adn;
                 m.comprado = true;
-                document.getElementById("ticker").innerText = `🧬 EVOLUCIÓN: Mutación añadida al código genético -> ${m.nombre}`;
-                renderizarListaMejoras();
-                actualizarInterfaz();
+                pushNoticia(`Evolución completada con éxito: ${m.nombre}`);
+                renderMejoras();
+                renderPaises();
+                actualizarInterfazGlobal(0, 0);
             }
+        }
+
+        function actualizarInterfazGlobal(totalInf, totalMuertos) {
+            document.getElementById("statAdn").innerText = adnActual;
+            document.getElementById("statInfected").innerText = formatNum(totalInf);
+            document.getElementById("statDead").innerText = formatNum(totalMuertos);
+            document.getElementById("statCura").innerText = Math.floor(curaProgreso) + "%";
+        }
+
+        function pushNoticia(texto) {
+            document.getElementById("newsTicker").innerText = "📢 " + texto;
         }
 
         function togglePausa() {
             juegoPausado = !juegoPausado;
-            document.getElementById("btn-pausa").innerText = juegoPausado ? "▶️ Seguir" : "⏸️ Pausa";
+            document.getElementById("pauseResumeBtn").innerText = juegoPausado ? "▶️ REANUDAR SIMULACIÓN" : "⏸️ PAUSAR SIMULACIÓN";
         }
 
-        // CONTROL MATEMÁTICO DIARIO (ALGORITMO VECTORIAL)
-        function buclePrincipal() {
-            if(juegoPausado) return;
-            dias++;
+        function formatNum(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
-            let totalInfectados = 0;
-            let totalMuertos = 0;
-            let gravedadGlobal = 0;
+        // --- SISTEMA LOGÍSTICO Y EVENTOS ---
+        function bucleJuego() {
+            if (juegoPausado) return;
 
-            // Atributos derivados de las mejoras acumuladas
-            let tieneAire1 = mejoras.find(m => m.id === "tr_aire1").comprado;
-            let tieneAire2 = mejoras.find(m => m.id === "tr_aire2").comprado;
-            let tieneAgua1 = mejoras.find(m => m.id === "tr_agua1").comprado;
-            let tieneVector = mejoras.find(m => m.id === "tr_vector").comprado;
-            let tieneFrio = mejoras.find(m => m.id === "hb_frio1").comprado;
-            let tieneFarmac = mejoras.find(m => m.id === "hb_farmac1").comprado;
-            let tieneDeriva = mejoras.find(m => m.id === "hb_mut_gen").comprado;
+            let totalInfectadosGlobal = 0;
+            let totalMuertosGlobal = 0;
+            let visibilidadTotal = 0;
 
-            // Cálculos dinámicos de síntomas
-            let bonificacionInfectividad = 1;
-            let letalidadBase = 0;
-            mejoras.filter(m => m.cat === "sint" && m.comprado).forEach(s => {
-                bonificacionInfectividad += s.infectividad || 0;
-                letalidadBase += s.letalidad || 0;
-                gravedadGlobal += s.gravedad || 0;
-            });
+            const tAire = mejoras.find(m => m.id === "t1").comprado;
+            const tAgua = mejoras.find(m => m.id === "t2").comprado;
+            const tAves = mejoras.find(m => m.id === "t3").comprado;
+            const sTos = mejoras.find(m => m.id === "s1").comprado;
+            const sHemofilia = mejoras.find(m => m.id === "s2").comprado;
+            const sNecrosis = mejoras.find(m => m.id === "s3").comprado;
+            const hFrio = mejoras.find(m => m.id === "h1").comprado;
+            const hFarmacos = mejoras.find(m => m.id === "h2").comprado;
 
-            // Factor pasivo por tipo de patógeno
-            if (tipoPatogeno === "Virus") {
-                // Mutación espontánea descontrolada de síntomas (Adictivo y caótico)
-                if (Math.random() < 0.04) {
-                    let sintomaAlazar = mejoras.filter(m => m.cat === "sint" && !m.comprado);
-                    if(sintomaAlazar.length > 0){
-                        let sChosen = sintomaAlazar[Math.floor(Math.random() * sintomaAlazar.length)];
-                        sChosen.comprado = true;
-                        adn += 2; // Bono de regalo
-                        document.getElementById("ticker").innerText = `⚡ MUTACIÓN AZAROSA: El virus mutó por sí mismo a [${sChosen.nombre}]!`;
-                    }
+            if (sTos) visibilidadTotal += 3;
+            if (sHemofilia) visibilidadTotal += 18;
+            if (sNecrosis) visibilidadTotal += 75;
+
+            // Rasgo pasivo de Parásito: reduce visibilidad detectada
+            if (tipoPatogeno === 'Parásito') visibilidadTotal *= 0.6;
+
+            // Mutación Espontánea Pasiva del Virus (Mecánica Adictiva)
+            if (tipoPatogeno === 'Virus' && Math.random() < 0.02) {
+                let noCompradas = mejoras.filter(m => !m.comprado);
+                if(noCompradas.length > 0) {
+                    let aleatoria = noCompradas[Math.floor(Math.random() * noCompradas.length)];
+                    aleatoria.comprado = true;
+                    pushNoticia(`⚠️ MUTACIÓN INVOLUNTARIA: El Virus ha desarrollado '${aleatoria.nombre}' sin coste de ADN.`);
                 }
-            } else if (tipoPatogeno === "Bio-Arma") {
-                factorBioArmaLetalidad += 0.4;
-                letalidadBase += factorBioArmaLetalidad;
-                gravedadGlobal += factorBioArmaLetalidad * 1.5;
             }
 
-            // PROCESAR CADENA DE CADA REGIÓN
-            regiones.forEach(r => {
-                if (r.inf > 0) {
-                    let factorRegio = 1.25;
+            // Simulación de Poblaciones por País
+            paises.forEach(p => {
+                let sanos = p.pob - (p.inf + p.muertos);
 
-                    // Ajustes de variables ambientales
-                    if (r.clima === "frio" && !tieneFrio) factorRegio *= 0.35;
-                    if (r.clima === "calido" && tieneVector) factorRegio *= 1.8;
-                    if (r.riqueza === "alta" && !tieneFarmac) factorRegio *= 0.25;
-                    if (tieneAire1 && r.clima === "templado") factorRegio *= 1.4;
+                if (p.inf > 0 && sanos > 0) {
+                    let multiplicadorContagio = 1.4;
+                    if (p.clima === "frio" && !hFrio) multiplicadorContagio *= 0.3;
+                    if (p.rico && !hFarmacos) multiplicadorContagio *= 0.25;
+                    if (sTos) multiplicadorContagio *= 1.35;
+                    if (sHemofilia) multiplicadorContagio *= 1.6;
 
-                    factorRegio *= bonificacionInfectividad;
-
-                    // Propagación logística interna
-                    let sanos = r.pob - r.inf - r.dead;
-                    let nuevosInfectados = Math.ceil(r.inf * (factorRegio * 0.2) * (sanos / r.pob));
+                    let infectadosNuevos = Math.ceil(p.inf * multiplicadorContagio * (sanos / p.pob));
+                    if (infectadosNuevos > sanos) infectadosNuevos = sanos;
                     
-                    if (nuevosInfectados > sanos) nuevosInfectados = sanos;
-                    r.inf += nuevosInfectados;
+                    p.inf += infectadosNuevos;
 
-                    // Procesamiento de fatalidades (Bajas masivas)
-                    if (letalidadBase > 0 && r.inf > 100) {
-                        let muertesDiarias = Math.ceil(r.inf * (letalidadBase * 0.004));
-                        if(muertesDiarias > r.inf) muertesDiarias = r.inf;
-                        
-                        r.inf -= muertesDiarias;
-                        r.dead += muertesDiarias;
-                    }
+                    // Probabilidad fija de obtener ADN por infectar masa crítica
+                    if (Math.random() < 0.14) adnActual += 1;
+                }
 
-                    // Colapso estructural sanitario hospitalario
-                    if ((r.inf / r.pob) > 0.15 && !r.hospitalColapso) {
-                        r.hospitalColapso = true;
-                        document.getElementById("ticker").innerText = `🏥 CRISIS: Hospitales de ${r.nombre} han colapsado por exceso de pacientes.`;
-                    }
-                    if (r.hospitalColapso) {
-                        r.dead += Math.ceil(r.inf * 0.01); // Muertes añadidas por falta de UCI
+                // Simulación de Fatalidad
+                if (p.inf > 10) {
+                    let factorLetalidad = 0;
+                    if (sTos) factorLetalidad += 0.0003;
+                    if (sHemofilia) factorLetalidad += 0.015;
+                    if (sNecrosis) factorLetalidad += 0.20;
+
+                    if (factorLetalidad > 0) {
+                        let muertesNuevas = Math.ceil(p.inf * factorLetalidad);
+                        if (muertesNuevas > p.inf) muertesNuevas = p.inf;
+                        p.muertos += muertesNuevas;
+                        p.inf -= muertesNuevas;
                     }
                 }
 
-                totalInfectados += r.inf;
-                totalMuertos += r.dead;
+                totalInfectadosGlobal += p.inf;
+                totalMuertosGlobal += p.muertos;
+            });
 
-                // Actualizar interfaz del mapa geográfico directo
-                document.getElementById(`inf-${r.id}`).innerText = abreviarNumero(r.inf);
-                document.getElementById(`dead-${r.id}`).innerText = abreviarNumero(r.dead);
-                
-                // Colorización en rojo según densidad de la infección
-                let pctInfeccion = (r.inf / r.pob);
-                let overlay = document.getElementById(`overlay-${r.id}`);
-                if (overlay) {
-                    overlay.style.backgroundColor
+            // Dispersión por Vectores de Transporte
+            if (totalInfectadosGlobal > 50) {
+                paises.forEach(origen => {
+                    if (origen.inf > 2000) {
+                        paises.forEach(destino => {
+                            if (destino.inf === 0 && (destino.pob - destino.muertos) > 0) {
+                                let probabilidadFrontera = (origen.con * destino.con) * 0.001;
+                                if (tAire) probabilidadFrontera *= 2.5;
+                                if (tAgua) probabilidadFrontera *= 2.5;
+                                if (tAves) probabilidadFrontera *= 3.5;
+
+                                if (Math.random() < probabilidadFrontera) {
+                                    destino.inf = 1;
+                                    pushNoticia(`Contención vulnerada: El patógeno ha entrado en ${destino.nombre}.`);
+                                    adnActual += 3;
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Algoritmo de Avance de la Cura Humana
+            if (visibilidadTotal > 10 || totalInfectadosGlobal > (totalMundial * 0.05)) {
+                if (!curaActiva) {
+                    curaActiva = true;
+                    pushNoticia("🚨 EMERGENCIA SANITARIA: La OMS detecta la amenaza global e inicia contramedidas.");
+                }
+                let avanceCura = 0.15 + (visibilidadTotal * 0.015);
+                if (sNecrosis) avanceCura *= 0.5; // El pánico y las bajas ralentizan los laboratorios
+                curaProgreso += avanceCura;
+            }
+
+            // Refresco Visual Obligatorio
+            actualizarInterfazGlobal(totalInfectadosGlobal, totalMuertosGlobal);
+            renderPaises();
+            renderMejoras();
+
+            // Reglas de Conclusión de Escenario
+            if (totalMuertosGlobal >= totalMundial) {
+                togglePausa();
+                alert("☣️ CONQUISTA BIOLÓGICA: Has eliminado de forma absoluta toda presencia humana en el planeta.");
+            } else if (curaProgreso >= 100) {
+                togglePausa();
+                alert("🛡️ DERROTA: La comunidad médica internacional distribuyó la vacuna. Tu especie ha sido neutralizada.");
+            } else if (totalInfectadosGlobal === 0 && totalMuertosGlobal > 0) {
+                let quedanFocos = paises.some(p => p.inf > 0);
+                if (!quendanFocos && totalMuertosGlobal < totalMundial) {
+                    togglePausa();
+                    alert("💀 ERROR TÁCTICO: La cepa eliminó a sus huéspedes demasiado rápido. El virus se ha extinguido de manera natural.");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
