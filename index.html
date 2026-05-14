@@ -244,21 +244,7 @@
             <p>Cuidado!!</p>
             <button class="play-btn" onclick="location.href='VirusBroma/index.html'">JUGAR AHORA</button>
         </div>
-        
- <div class="game-card">
-            <img src="_129269792_9167d823-b187-4d43-a1ff-9ba322027aaf.jpg" class="game-img" alt="Miextrix">
-            <h3>🧱 ZOMBIE ASSAULT</h3>
-            <p>Encaja los bloques y consigue puntos!</p>
-            <button class="play-btn" onclick="location.href='ZOMBIEASSAULT/index.html'">JUGAR AHORA</button>
-        </div>
-        
-        <div class="game-card">
-            <img src="_129269792_9167d823-b187-4d43-a1ff-9ba322027aaf.jpg" class="game-img" alt="Miextrix">
-            <h3>🧱 VAPOR MON</h3>
-            <p>Encaja los bloques y consigue puntos!</p>
-            <button class="play-btn" onclick="location.href='VaporMon/index.html'">JUGAR AHORA</button>
-        </div>
-        
+ 
     </div>
  
     <!-- ZONA VIP -->
@@ -338,30 +324,9 @@
     <footer>&copy; 2026 MINGUELASGO GAMES</footer>
  
     <script>
-        /*
-         * ============================================================
-         *  SISTEMA DE ACCESO CON HASH SHA-256
-         * ============================================================
-         *  Las contraseñas NO se guardan aquí en texto plano.
-         *  Solo se guarda su hash SHA-256, que es irreversible.
-         *
-         *  Para cambiar una contraseña:
-         *    1. Ve a: https://emn178.github.io/online-tools/sha256.html
-         *    2. Escribe la nueva contraseña y copia el hash.
-         *    3. Pega el hash en VIP_HASH o DEV_HASH abajo.
-         *
-         *  Para revocar acceso a alguien:
-         *    Cambia el hash. Cualquiera que tenga el hash antiguo
-         *    guardado en su localStorage perderá el acceso
-         *    automáticamente al recargar la página.
-         * ============================================================
-         */
  
-        // Hash SHA-256 de "ABUBACACALLO"
-        const VIP_HASH = "48be857b71525d59a46d9461f19a8fbf0e4d9aafca5975c1c0df8eb54b0ff303";
- 
-        // Hash SHA-256 de "ABUBACACALLA"
-        const DEV_HASH = "101905c6df5b8afb5fa332fea3b83b8a02f311c83e741f041d9d0ccd94c70746";
+        const VIP_HASH = "bda9368faafaea011e17d44c69993d74f3936ede9a723d3cc9623588fac60ebc";
+        const DEV_HASH = "bda9368faafaea011e17d44c69993d74f3936ede9a723d3cc9623588fac60ebc";
  
         // Convierte texto a hash SHA-256 (función nativa del navegador)
         async function sha256(text) {
@@ -448,4 +413,3 @@
  
 </body>
 </html>
- 
