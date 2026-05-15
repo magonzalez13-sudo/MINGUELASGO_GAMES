@@ -1,317 +1,760 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monstruos de Vapor - RPG</title>
-    <style>
-        body {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #ff9900;
-            text-align: center;
-            border-bottom: 2px solid #ff9900;
-            padding-bottom: 10px;
-        }
-        .pantalla-combate {
-            background-color: #2a2a2a;
-            border: 3px solid #444;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .contenedor-monstruos {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .bando {
-            width: 45%;
-            background-color: #333;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #555;
-        }
-        .nombre {
-            font-weight: bold;
-            font-size: 1.2em;
-            color: #fff;
-        }
-        .info-adicional {
-            font-size: 0.9em;
-            color: #aaa;
-            margin-bottom: 8px;
-        }
-        .barra-contenedor {
-            background-color: #555;
-            height: 15px;
-            border-radius: 3px;
-            margin-bottom: 8px;
-            overflow: hidden;
-        }
-        .barra-hp {
-            background-color: #2ecc71;
-            height: 100%;
-            width: 100%;
-            transition: width 0.3s;
-        }
-        .barra-pv {
-            background-color: #3498db;
-            height: 100%;
-            width: 100%;
-            transition: width 0.3s;
-        }
-        .consola {
-            background-color: #000;
-            color: #00ff00;
-            padding: 15px;
-            height: 150px;
-            overflow-y: auto;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-            border: 1px solid #333;
-        }
-        .controles {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        button {
-            background-color: #ff9900;
-            color: #000;
-            border: none;
-            padding: 12px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 3px;
-            font-family: inherit;
-        }
-        button:hover {
-            background-color: #cc7a00;
-        }
-        button:disabled {
-            background-color: #555;
-            color: #888;
-            cursor: not-allowed;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vapor Chronicles MASSIVE RPG</title>
+
+<style>
+body{
+    margin:0;
+    background:#050811;
+    color:white;
+    font-family:Segoe UI,Arial;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow:hidden;
+}
+
+h1{
+    color:#f1c40f;
+    margin:10px;
+    text-shadow:0 0 10px #f1c40f;
+}
+
+.layout{
+    display:grid;
+    grid-template-columns:660px 340px;
+    gap:10px;
+}
+
+canvas{
+    background:#000;
+    border:3px solid #1f2d44;
+    border-radius:6px;
+}
+
+.sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.panel{
+    background:#0f1622;
+    border:2px solid #1f2d44;
+    border-radius:6px;
+    padding:10px;
+}
+
+.panel h3{
+    margin:0 0 6px 0;
+    color:#f1c40f;
+}
+
+.stat{
+    display:flex;
+    justify-content:space-between;
+    margin:4px 0;
+    font-size:14px;
+}
+
+.log{
+    width:640px;
+    background:black;
+    border:2px solid #1f2d44;
+    padding:8px;
+    color:#00ff90;
+    font-family:monospace;
+    margin-top:5px;
+    height:60px;
+}
+
+button{
+    width:100%;
+    margin-top:5px;
+    padding:7px;
+    background:#2c3e50;
+    color:white;
+    border:none;
+    cursor:pointer;
+    border-radius:4px;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#34495e;
+}
+
+#battleOverlay{
+    position:absolute;
+    width:640px;
+    height:448px;
+    background:rgba(0,0,0,0.95);
+    display:none;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.battleTop{
+    display:flex;
+    justify-content:space-between;
+}
+
+.battleBox{
+    width:45%;
+    background:#111827;
+    border:2px solid #34495e;
+    padding:10px;
+}
+
+.hpbg{
+    background:#555;
+    height:10px;
+    margin-top:5px;
+}
+
+.hp{
+    background:#2ecc71;
+    height:100%;
+    width:100%;
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+</style>
 </head>
+
 <body>
 
-    <h1>MONSTRUOS DE VAPOR</h1>
+<h1>VAPOR CHRONICLES MASSIVE RPG</h1>
 
-    <div class="pantalla-combate">
-        <div class="contenedor-monstruos">
-            <!-- Bando Aliado -->
-            <div class="bando">
-                <div class="nombre" id="aliado-nombre">Ratatuerca</div>
-                <div class="info-adicional" id="aliado-info">Nivel 14 | Tipo: Mecánico</div>
-                <div>HP: <span id="aliado-hp-texto">100/100</span></div>
-                <div class="barra-contenedor">
-                    <div class="barra-hp" id="aliado-hp-barra"></div>
-                </div>
-                <div>Vapor (PV): <span id="aliado-pv-texto">40/40</span></div>
-                <div class="barra-contenedor">
-                    <div class="barra-pv" id="aliado-pv-barra"></div>
-                </div>
-            </div>
+<div class="layout">
 
-            <!-- Bando Enemigo -->
-            <div class="bando">
-                <div class="nombre" id="enemigo-nombre">Can Mecatrónico</div>
-                <div class="info-adicional" id="enemigo-info">Nivel 12 | Tipo: Eléctrico</div>
-                <div>HP: <span id="enemigo-hp-texto">90/90</span></div>
-                <div class="barra-contenedor">
-                    <div class="barra-hp" id="enemigo-hp-barra"></div>
-                </div>
-            </div>
-        </div>
+<div style="position:relative;">
+<canvas id="game" width="640" height="448"></canvas>
 
-        <div class="consola" id="consola-texto">
-            ¡Un Can Mecatrónico salvaje apareció en el Desguace Oxidado!<br>
-            ¡Adelante, Ratatuerca! Elige una acción.
-        </div>
+<div id="battleOverlay">
 
-        <div class="controles">
-            <button id="btn-ataque" onclick="ejecutarTurno('atacar')">Mordisco Rápido (0 PV)</button>
-            <button id="btn-habilidad" onclick="ejecutarTurno('habilidad')">Embestida Engranaje (15 PV)</button>
-            <button id="btn-capsula" onclick="ejecutarTurno('capsula')">Lanzar Cápsula Vacío</button>
-            <button id="btn-reiniciar" onclick="reiniciarJuego()" style="background-color: #d9534f; color: white;">Buscar Otro Monstruo</button>
-        </div>
-    </div>
+<div class="battleTop">
 
-    <script>
-        // Datos del jugador y enemigo
-        let jugador = {
-            nombre: "Ratatuerca",
-            tipo: "Mecánico",
-            nivel: 14,
-            hpMax: 100,
-            hpActual: 100,
-            pvMax: 40,
-            pvActual: 40,
-            ataque: 18,
-            paralizado: false
-        };
+<div class="battleBox">
+<div id="enemyName">Enemy</div>
+<div id="enemyLv">LV 1</div>
+<div class="hpbg">
+<div class="hp" id="enemyHp"></div>
+</div>
+</div>
 
-        let enemigo = {
-            nombre: "Can Mecatrónico",
-            tipo: "Eléctrico",
-            nivel: 12,
-            hpMax: 90,
-            hpActual: 90,
-            ataque: 15,
-            recargando: false
-        };
+<div class="battleBox">
+<div>TU EQUIPO</div>
+<div id="playerLv">LV 1</div>
+<div class="hpbg">
+<div class="hp" id="playerHp"></div>
+</div>
+</div>
 
-        const consola = document.getElementById("consola-texto");
+</div>
 
-        function actualizarInterfaz() {
-            // Actualizar textos
-            document.getElementById("aliado-hp-texto").innerText = `${jugador.hpActual}/${jugador.hpMax}`;
-            document.getElementById("aliado-pv-texto").innerText = `${jugador.pvActual}/${jugador.pvMax}`;
-            document.getElementById("enemigo-hp-texto").innerText = `${enemigo.hpActual}/${enemigo.hpMax}`;
+<div id="battleText">¡Combate iniciado!</div>
 
-            // Actualizar barras visuales
-            const pctHpJugador = Math.max(0, (jugador.hpActual / jugador.hpMax) * 100);
-            const pctPvJugador = Math.max(0, (jugador.pvActual / jugador.pvMax) * 100);
-            const pctHpEnemigo = Math.max(0, (enemigo.hpActual / enemigo.hpMax) * 100);
+<div class="actions">
+<button onclick="battleAction('attack')">ATACAR</button>
+<button onclick="battleAction('heal')">CURAR</button>
+<button onclick="battleAction('capture')">CAPTURAR</button>
+<button onclick="battleAction('run')">HUIR</button>
+</div>
 
-            document.getElementById("aliado-hp-barra").style.width = pctHpJugador + "%";
-            document.getElementById("aliado-pv-barra").style.width = pctPvJugador + "%";
-            document.getElementById("enemigo-hp-barra").style.width = pctHpEnemigo + "%";
+</div>
 
-            // Desactivar botones si el juego terminó
-            if (jugador.hpActual <= 0 || enemigo.hpActual <= 0) {
-                document.getElementById("btn-ataque").disabled = true;
-                document.getElementById("btn-habilidad").disabled = true;
-                document.getElementById("btn-capsula").disabled = true;
-            } else {
-                document.getElementById("btn-ataque").disabled = false;
-                document.getElementById("btn-habilidad").disabled = (jugador.pvActual < 15);
-                document.getElementById("btn-capsula").disabled = false;
+<div class="log" id="log">Bienvenido al mundo Vapor.</div>
+
+</div>
+
+<div class="sidebar">
+
+<div class="panel">
+<h3>MISIÓN</h3>
+<div id="missionText"></div>
+</div>
+
+<div class="panel">
+<h3>ESTADÍSTICAS</h3>
+
+<div class="stat"><span>Zona:</span><span id="zone"></span></div>
+<div class="stat"><span>Nivel:</span><span id="level"></span></div>
+<div class="stat"><span>EXP:</span><span id="exp"></span></div>
+<div class="stat"><span>Dinero:</span><span id="money"></span></div>
+<div class="stat"><span>Capturados:</span><span id="caught"></span></div>
+<div class="stat"><span>Vaporballs:</span><span id="balls"></span></div>
+<div class="stat"><span>Coords:</span><span id="coords"></span></div>
+<div class="stat"><span>Clima:</span><span id="weather"></span></div>
+
+<button onclick="buyBalls()">Comprar Vaporball</button>
+<button onclick="buySurf()">Comprar Surf</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const TILE = 32;
+const COLS = 20;
+const ROWS = 14;
+
+let weather = "Soleado";
+let timeCycle = 0;
+
+const zones = [
+"Pueblo Inicial Alfa",
+"Bosque Niebla Verde",
+"Pantano Tóxico",
+"Costa Vapor Azul",
+"Ruinas del Titan",
+"Monte Ceniza",
+"Ciudad Neon-X",
+"Laboratorio Omega",
+"Desierto Carmesí",
+"Puerto Oxidado",
+"Valle Cristal",
+"Templo Abisal",
+"Cañón Eclipse",
+"Fortaleza Vapor",
+"Zona Industrial K-12",
+"Bosque Espectral",
+"Pradera Solar",
+"Isla Trueno",
+"Archipiélago Vapor",
+"Cueva Infinita",
+"Ciudad Central",
+"Barrio Mecánico",
+"Planta Nuclear",
+"Lago Helado",
+"Montaña Glacial",
+"Ciudadela Celeste",
+"Ruinas del Tiempo",
+"Bosque de Acero",
+"Base Militar Zenith",
+"Zona Cero",
+"Pantano Negro",
+"Templo Antiguo",
+"Desierto Dorado",
+"Ciudad Mercurio",
+"Puerto Fantasma",
+"Cordillera Titan",
+"Valle Perdido",
+"Prisión Abandonada",
+"Zona Experimental",
+"Ciudad Arcadia",
+"Isla Jurásica",
+"Bosque Rojo",
+"Ruinas Subterráneas",
+"Fortaleza Obsidiana",
+"Ciudad Prisma",
+"Templo del Vapor Supremo",
+"Océano Profundo",
+"Isla Artificial",
+"Volcán Omega",
+"Bosque Gigante",
+"Ciudad Holograma",
+"Catedral Mecánica",
+"Base Lunar",
+"Dimensión Vapor",
+"Núcleo del Mundo",
+"Trono del Emperador Vapor"
+];
+
+const missions = [];
+
+for(let i=1;i<=100;i++){
+    missions.push("Completa la misión épica #" + i);
+}
+
+const monsters = [
+"Vaporion",
+"Hydrax",
+"Voltaris",
+"Cryon",
+"Infernot",
+"Omega Vapor",
+"Spectron",
+"Nebulon",
+"Titan-X",
+"Abyssal"
+];
+
+const player = {
+    x:50,
+    y:50,
+    level:5,
+    exp:0,
+    money:500,
+    balls:10,
+    caught:0,
+    mission:1,
+    surf:false,
+    evolved:false
+};
+
+let playerHp = 100;
+let enemyHp = 100;
+let battle = false;
+
+let enemy = {
+    name:"",
+    level:1
+};
+
+function log(t){
+    document.getElementById("log").innerText = t;
+}
+
+function saveGame(){
+    localStorage.setItem("vaporSave", JSON.stringify(player));
+}
+
+function loadGame(){
+    let save = localStorage.getItem("vaporSave");
+
+    if(save){
+        Object.assign(player, JSON.parse(save));
+    }
+}
+
+loadGame();
+
+function tile(x,y){
+
+    if(x<0 || y<0 || x>700 || y>700) return 2;
+
+    if(x%25===0 && y%25===0) return 5;
+
+    if(x%18===0) return 3;
+
+    let n = Math.abs(Math.sin(x*12.989+y*78.233)*9999)%1;
+
+    if(n<0.25) return 1;
+    if(n<0.33) return 2;
+    if(n<0.38) return 4;
+
+    return 0;
+}
+
+function updateUI(){
+
+    document.getElementById("level").innerText = player.level;
+    document.getElementById("exp").innerText = player.exp+"/100";
+    document.getElementById("money").innerText = player.money+"$";
+    document.getElementById("balls").innerText = player.balls;
+    document.getElementById("caught").innerText = player.caught;
+    document.getElementById("coords").innerText = player.x+", "+player.y;
+    document.getElementById("weather").innerText = weather;
+
+    let zoneID = Math.floor(player.x/15)+Math.floor(player.y/15)*7;
+    zoneID=Math.max(0,Math.min(55,zoneID));
+
+    document.getElementById("zone").innerText = zones[zoneID];
+
+    if(player.mission<=100){
+        document.getElementById("missionText").innerText =
+        "MISIÓN "+player.mission+"/100: "+missions[player.mission-1];
+    }else{
+        document.getElementById("missionText").innerText =
+        "¡HAS COMPLETADO EL JUEGO!";
+    }
+
+    saveGame();
+}
+
+function checkMission(){
+
+    if(player.level>=player.mission/4){
+
+        player.mission++;
+        player.money+=200;
+
+        log("¡Misión completada!");
+    }
+}
+
+function move(dx,dy){
+
+    if(battle) return;
+
+    let nx = player.x+dx;
+    let ny = player.y+dy;
+
+    let t = tile(nx,ny);
+
+    if(t===2) return;
+
+    if(t===3 && !player.surf){
+        log("Necesitas SURF.");
+        return;
+    }
+
+    player.x=nx;
+    player.y=ny;
+
+    if(Math.random()<0.16){
+        startBattle();
+    }
+
+    checkMission();
+
+    updateUI();
+
+    draw();
+}
+
+function startBattle(){
+
+    battle=true;
+
+    enemyHp=100;
+
+    enemy.name = monsters[Math.floor(Math.random()*monsters.length)];
+    enemy.level = Math.floor(Math.random()*10)+player.level;
+
+    if(Math.random()<0.03){
+        enemy.name="✨ LEGENDARIO "+enemy.name;
+        enemy.level+=10;
+    }
+
+    document.getElementById("enemyName").innerText=enemy.name;
+    document.getElementById("enemyLv").innerText="LV "+enemy.level;
+    document.getElementById("playerLv").innerText="LV "+player.level;
+
+    updateBars();
+
+    document.getElementById("battleText").innerText=
+    "¡Un "+enemy.name+" apareció!";
+
+    document.getElementById("battleOverlay").style.display="flex";
+}
+
+function updateBars(){
+
+    document.getElementById("enemyHp").style.width=enemyHp+"%";
+    document.getElementById("playerHp").style.width=playerHp+"%";
+}
+
+function battleAction(type){
+
+    const txt = document.getElementById("battleText");
+
+    if(type==="run"){
+        battle=false;
+        document.getElementById("battleOverlay").style.display="none";
+        log("Escapaste.");
+        return;
+    }
+
+    if(type==="heal"){
+        playerHp=Math.min(100,playerHp+30);
+        txt.innerText="Te curaste.";
+        updateBars();
+        enemyTurn();
+        return;
+    }
+
+    if(type==="attack"){
+
+        let dmg=Math.floor(Math.random()*20)+10+player.level;
+
+        enemyHp-=dmg;
+
+        txt.innerText="Hiciste "+dmg+" daño.";
+
+        if(enemyHp<=0){
+
+            let reward=enemy.level*20;
+
+            player.money+=reward;
+            player.exp+=40;
+
+            if(player.exp>=100){
+                player.level++;
+                player.exp=0;
             }
+
+            txt.innerText="¡Victoria! +"+reward+"$";
+
+            battle=false;
+
+            setTimeout(()=>{
+                document.getElementById("battleOverlay").style.display="none";
+            },1000);
+
+            updateUI();
+
+            return;
         }
 
-        function escribirConsola(texto) {
-            consola.innerHTML += "<br>" + texto;
-            consola.scrollTop = consola.scrollHeight;
+        updateBars();
+
+        enemyTurn();
+    }
+
+    if(type==="capture"){
+
+        if(player.balls<=0){
+            txt.innerText="Sin Vaporballs.";
+            return;
         }
 
-        function calcularDano(base, atacanteTipo, defensorTipo) {
-            let multiplicador = 1.0;
-            // Eléctrico es fuerte contra Mecánico
-            if (atacanteTipo === "Eléctrico" && defensorTipo === "Mecánico") multiplicador = 1.5;
-            // Mecánico es débil contra Eléctrico
-            if (atacanteTipo === "Mecánico" && defensorTipo === "Eléctrico") multiplicador = 0.5;
-            
-            return {
-                dano: Math.floor(base * multiplicador),
-                critico: multiplicador
-            };
+        player.balls--;
+
+        let chance=(100-enemyHp)/100;
+
+        if(Math.random()<chance){
+
+            player.caught++;
+
+            txt.innerText="¡Capturado!";
+
+            battle=false;
+
+            setTimeout(()=>{
+                document.getElementById("battleOverlay").style.display="none";
+            },1000);
+
+        }else{
+            txt.innerText="¡Falló!";
+            enemyTurn();
         }
 
-        function ejecutarTurno(accionJugador) {
-            // --- TURNO DEL JUGADOR ---
-            if (accionJugador === 'atacar') {
-                let resultado = calcularDano(jugador.ataque, jugador.tipo, enemigo.tipo);
-                enemigo.hpActual = Math.max(0, enemigo.hpActual - resultado.dano);
-                escribirConsola(`> Ratatuerca usa Mordisco Rápido. Daño: ${resultado.dano}. (Poco efectivo contra Eléctrico)`);
-            } 
-            else if (accionJugador === 'habilidad') {
-                jugador.pvActual -= 15;
-                let resultado = calcularDano(jugador.ataque * 2, "Neutro", enemigo.tipo); 
-                enemigo.hpActual = Math.max(0, enemigo.hpActual - resultado.dano);
-                escribirConsola(`> Ratatuerca usa Embestida Engranaje consumiendo 15 PV. Daño: ${resultado.dano}.`);
-            } 
-            else if (accionJugador === 'capsula') {
-                escribirConsola("> Lanzas una Cápsula de Vacío...");
-                let saludFaltante = 1 - (enemigo.hpActual / enemigo.hpMax);
-                let azar = Math.random();
-                
-                // A menor vida del enemigo, más alta la probabilidad de captura
-                if (azar < (0.2 + saludFaltante * 0.6)) {
-                    escribirConsola("¡La cápsula vibra... 1... 2... 3... CAPTURADO! Has sumado al Can Mecatrónico a tu equipo.");
-                    enemigo.hpActual = 0;
-                    actualizarInterfaz();
-                    return;
-                } else {
-                    escribirConsola("¡La cápsula se rompió! El monstruo logró liberarse.");
+        updateUI();
+    }
+}
+
+function enemyTurn(){
+
+    setTimeout(()=>{
+
+        if(!battle) return;
+
+        let dmg=Math.floor(Math.random()*12)+enemy.level;
+
+        playerHp-=dmg;
+
+        document.getElementById("battleText").innerText=
+        enemy.name+" hizo "+dmg+" daño.";
+
+        if(playerHp<=0){
+
+            playerHp=100;
+
+            player.x=50;
+            player.y=50;
+
+            battle=false;
+
+            document.getElementById("battleOverlay").style.display="none";
+
+            log("Fuiste derrotado.");
+
+        }
+
+        updateBars();
+
+    },700);
+}
+
+function buyBalls(){
+
+    if(player.money>=50){
+        player.money-=50;
+        player.balls++;
+        updateUI();
+    }
+}
+
+function buySurf(){
+
+    if(player.money>=300 && !player.surf){
+
+        player.money-=300;
+        player.surf=true;
+
+        log("¡SURF desbloqueado!");
+
+        updateUI();
+    }
+}
+
+function updateWeather(){
+
+    timeCycle++;
+
+    if(timeCycle%500===0){
+
+        const w=["Soleado","Lluvia","Tormenta","Niebla"];
+
+        weather=w[Math.floor(Math.random()*w.length)];
+    }
+}
+
+function draw(){
+
+    updateWeather();
+
+    ctx.clearRect(0,0,640,448);
+
+    let camX=player.x-Math.floor(COLS/2);
+    let camY=player.y-Math.floor(ROWS/2);
+
+    for(let r=0;r<ROWS;r++){
+
+        for(let c=0;c<COLS;c++){
+
+            let wx=camX+c;
+            let wy=camY+r;
+
+            let t=tile(wx,wy);
+
+            let x=c*TILE;
+            let y=r*TILE;
+
+            switch(t){
+
+                case 0: ctx.fillStyle="#1e272c"; break;
+                case 1: ctx.fillStyle="#2ecc71"; break;
+                case 2: ctx.fillStyle="#556b2f"; break;
+                case 3: ctx.fillStyle="#2980b9"; break;
+                case 4: ctx.fillStyle="#95a5a6"; break;
+                case 5: ctx.fillStyle="#9b59b6"; break;
+            }
+
+            ctx.fillRect(x,y,TILE,TILE);
+
+            if(t===1){
+
+                ctx.fillStyle="rgba(0,0,0,0.1)";
+
+                for(let i=0;i<5;i++){
+                    ctx.fillRect(
+                        x+Math.random()*32,
+                        y+Math.random()*32,
+                        2,
+                        2
+                    );
                 }
             }
 
-            actualizarInterfaz();
+            if(t===3){
 
-            // Verificar si el enemigo cayó
-            if (enemigo.hpActual <= 0) {
-                escribirConsola("¡El Can Mecatrónico salvaje ha sido derrotado! Ganaste 45 EXP.");
-                return;
+                ctx.fillStyle="rgba(255,255,255,0.08)";
+                ctx.fillRect(x,y,32,5);
             }
 
-            // --- TURNO DEL ENEMIGO ---
-            setTimeout(() => {
-                if (enemigo.recargando) {
-                    escribirConsola("El Can Mecatrónico está recuperando presión de vapor. No puede atacar.");
-                    enemigo.recargando = false;
-                    // El jugador recupera algo de vapor por turno
-                    jugador.pvActual = Math.min(jugador.pvMax, jugador.pvActual + 5);
-                    actualizarInterfaz();
-                    return;
-                }
-
-                // Inteligencia artificial simple: decide usar ataque fuerte aleatoriamente
-                let usarAtaqueFuerte = Math.random() > 0.5;
-
-                if (usarAtaqueFuerte) {
-                    let resultado = calcularDano(enemigo.ataque * 1.8, enemigo.tipo, jugador.tipo);
-                    jugador.hpActual = Math.max(0, jugador.hpActual - resultado.dano);
-                    escribirConsola(`¡El Can Mecatrónico usa Mordisco Voltaico! ¡Es súper efectivo! Daño: ${resultado.dano}.`);
-                    enemigo.recargando = true; // Se cansará el próximo turno
-                } else {
-                    let resultado = calcularDano(enemigo.ataque, "Neutro", jugador.tipo);
-                    jugador.hpActual = Math.max(0, jugador.hpActual - resultado.dano);
-                    escribirConsola(`¡El Can Mecatrónico usa Arañazo Metálico! Daño: ${resultado.dano}.`);
-                }
-
-                // El jugador recupera algo de vapor cada turno
-                jugador.pvActual = Math.min(jugador.pvMax, jugador.pvActual + 5);
-                actualizarInterfaz();
-
-                if (jugador.hpActual <= 0) {
-                    escribirConsola("¡Ratatuerca se ha quedado sin energía! Has sido transportado al taller de reparación más cercano.");
-                }
-            }, 800);
+            ctx.strokeStyle="rgba(0,0,0,0.2)";
+            ctx.strokeRect(x,y,TILE,TILE);
         }
+    }
 
-        function reiniciarJuego() {
-            // Restablecer valores para una nueva partida rápida
-            jugador.hpActual = jugador.hpMax;
-            jugador.pvActual = jugador.pvMax;
-            
-            // Variar ligeramente el enemigo salvaje
-            const nombres = ["Can Mecatrónico", "Chatarra Viviente", "Halcón a Presión"];
-            enemigo.nombre = nombres[Math.floor(Math.random() * nombres.length)];
-            enemigo.hpMax = 80 + Math.floor(Math.random() * 30);
-            enemigo.hpActual = enemigo.hpMax;
-            enemigo.recargando = false;
+    let px=(player.x-camX)*TILE+4;
+    let py=(player.y-camY)*TILE+4;
 
-            document.getElementById("enemigo-nombre").innerText = enemigo.nombre;
-            document.getElementById("enemigo-info").innerText = `Nivel ${10 + Math.floor(Math.random() * 5)} | Tipo: Eléctrico`;
+    ctx.fillStyle=player.evolved ? "#ff7f50":"#f1c40f";
+    ctx.fillRect(px,py,TILE-8,TILE-8);
 
-            consola.innerHTML = `¡Un ${enemigo.nombre} salvaje apareció en el Desguace Oxidado!<br>¡Adelante, Ratatuerca! Elige una acción.`;
-            actualizarInterfaz();
+    ctx.strokeStyle="black";
+    ctx.strokeRect(px,py,TILE-8,TILE-8);
+
+    if(weather==="Lluvia"){
+
+        ctx.fillStyle="rgba(100,100,255,0.15)";
+        ctx.fillRect(0,0,640,448);
+
+        for(let i=0;i<120;i++){
+
+            ctx.fillStyle="rgba(200,200,255,0.5)";
+            ctx.fillRect(
+                Math.random()*640,
+                Math.random()*448,
+                2,
+                10
+            );
         }
+    }
 
-        // Ejecución inicial
-        actualizarInterfaz();
-    </script>
+    if(weather==="Tormenta"){
+
+        ctx.fillStyle="rgba(0,0,0,0.25)";
+        ctx.fillRect(0,0,640,448);
+    }
+
+    if(weather==="Niebla"){
+
+        ctx.fillStyle="rgba(255,255,255,0.07)";
+        ctx.fillRect(0,0,640,448);
+    }
+
+    let darkness=Math.abs(Math.sin(timeCycle*0.002))*0.45;
+
+    ctx.fillStyle=`rgba(0,0,40,${darkness})`;
+    ctx.fillRect(0,0,640,448);
+
+    ctx.fillStyle="rgba(0,0,0,0.7)";
+    ctx.fillRect(500,10,120,120);
+
+    for(let my=0;my<12;my++){
+
+        for(let mx=0;mx<12;mx++){
+
+            let wx=player.x+mx-6;
+            let wy=player.y+my-6;
+
+            let t=tile(wx,wy);
+
+            switch(t){
+                case 0: ctx.fillStyle="#444"; break;
+                case 1: ctx.fillStyle="#2ecc71"; break;
+                case 2: ctx.fillStyle="#556b2f"; break;
+                case 3: ctx.fillStyle="#3498db"; break;
+                default: ctx.fillStyle="#999";
+            }
+
+            ctx.fillRect(
+                505+mx*9,
+                15+my*9,
+                8,
+                8
+            );
+        }
+    }
+
+    ctx.fillStyle="#f1c40f";
+    ctx.fillRect(558,68,6,6);
+}
+
+window.addEventListener("keydown",e=>{
+
+    if(e.key==="ArrowUp" || e.key==="w") move(0,-1);
+    if(e.key==="ArrowDown" || e.key==="s") move(0,1);
+    if(e.key==="ArrowLeft" || e.key==="a") move(-1,0);
+    if(e.key==="ArrowRight" || e.key==="d") move(1,0);
+});
+
+updateUI();
+draw();
+
+setInterval(draw,120);
+
+</script>
+
 </body>
 </html>
