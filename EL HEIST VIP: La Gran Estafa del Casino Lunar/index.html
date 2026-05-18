@@ -1,558 +1,1313 @@
+<!-- =========================
+🔥 EL HEIST VIP 2.0 🔥
+MEJORAS:
+✔ Sistema de dinero
+✔ Inventario
+✔ Guardias dinámicos
+✔ Música visual neon
+✔ Más mapas
+✔ Eventos aleatorios
+✔ Sistema de recompensas
+✔ Mercado negro
+✔ Niveles de dificultad
+✔ Mejor HUD
+✔ Animaciones
+✔ Más misiones
+✔ Sistema de detección
+✔ Escape final cinematográfico
+========================= -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎭 EL HEIST VIP - The Grand Heist</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        :root {
-            --primary: #1a1a2e;
-            --secondary: #16213e;
-            --accent: #0f3460;
-            --gold: #e94560;
-            --success: #00d4aa;
-            --warning: #ffa500;
-            --danger: #ff4757;
-            --text: #ecf0f1;
-        }
-        body {
-            font-family: 'Orbitron', 'Arial', sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: var(--text);
-            overflow: hidden;
-            height: 100vh;
-        }
-        .container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EL HEIST VIP 2.0</title>
 
-        /* MENÚ PRINCIPAL */
-        .main-menu {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
-        }
-        .title-game {
-            font-size: 4em;
-            color: var(--gold);
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px var(--gold);
-            animation: glow 2s infinite;
-        }
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 20px var(--gold); }
-            50% { text-shadow: 0 0 40px var(--gold); }
-        }
-        .subtitle {
-            font-size: 1.2em;
-            color: var(--success);
-            margin-bottom: 50px;
-            letter-spacing: 3px;
-        }
-        .btn {
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border: 2px solid var(--gold);
-            background: var(--accent);
-            color: var(--text);
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .btn:hover {
-            background: var(--gold);
-            color: var(--primary);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--gold);
-        }
+<style>
 
-        /* JUEGO */
-        .game-container {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-        }
-        .game-container.active {
-            display: flex;
-        }
-        .header {
-            background: var(--secondary);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid var(--gold);
-        }
-        .game-stats {
-            display: flex;
-            gap: 40px;
-            align-items: center;
-        }
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .stat-label {
-            color: var(--success);
-            font-size: 0.9em;
-        }
-        .stat-value {
-            font-size: 1.3em;
-            color: var(--gold);
-            font-weight: bold;
-        }
-        .turn-indicator {
-            padding: 10px 20px;
-            background: var(--danger);
-            border-radius: 5px;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-        .main-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        .sidebar, .right-sidebar {
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .sidebar {
-            width: 300px;
-            background: var(--accent);
-            border-right: 2px solid var(--gold);
-        }
-        .right-sidebar {
-            width: 280px;
-            background: var(--accent);
-            border-left: 2px solid var(--gold);
-        }
+:root{
+--bg:#090b12;
+--panel:#121826;
+--panel2:#1b2335;
+--gold:#ffcc00;
+--red:#ff4757;
+--green:#00d2a0;
+--blue:#00bfff;
+--text:#ecf0f1;
+}
 
-        .section-title {
-            color: var(--gold);
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--gold);
-            padding-bottom: 10px;
-        }
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:
+radial-gradient(circle at top,#18213a 0%,#090b12 70%);
+color:var(--text);
+overflow:hidden;
+height:100vh;
+}
 
-        .team-member {
-            background: var(--primary);
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border-left: 4px solid var(--gold);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .team-member:hover {
-            background: var(--secondary);
-            transform: translateX(5px);
-        }
-        .team-member.selected {
-            background: var(--gold);
-            color: var(--primary);
-        }
+.container{
+width:100%;
+height:100vh;
+display:flex;
+flex-direction:column;
+}
 
-        .tabs {
-            display: flex;
-            background: var(--secondary);
-            border-bottom: 2px solid var(--gold);
-        }
-        .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        .tab.active {
-            background: var(--gold);
-            color: var(--primary);
-        }
+/* MENU */
 
-        .tab-content {
-            display: none;
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .tab-content.active {
-            display: flex;
-            flex-direction: column;
-        }
+.main-menu{
+position:absolute;
+inset:0;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+background:
+linear-gradient(135deg,#0c1020,#10192e);
+z-index:20;
+}
 
-        .map-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        .map-level {
-            background: var(--secondary);
-            padding: 20px;
-            border-radius: 8px;
-            border: 2px solid var(--accent);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .map-level:hover {
-            border-color: var(--gold);
-            transform: scale(1.05);
-        }
-        .map-level.cleared {
-            border-color: var(--success);
-            background: rgba(0, 212, 170, 0.1);
-        }
+.title{
+font-size:5em;
+color:var(--gold);
+text-shadow:
+0 0 15px var(--gold),
+0 0 40px rgba(255,204,0,.5);
+animation:glow 2s infinite;
+margin-bottom:20px;
+}
 
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        .action-card {
-            background: var(--secondary);
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px solid var(--accent);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .action-card:hover {
-            background: var(--accent);
-            border-color: var(--gold);
-        }
+@keyframes glow{
+0%,100%{
+transform:scale(1);
+}
+50%{
+transform:scale(1.03);
+}
+}
 
-        .log-entry {
-            background: var(--primary);
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            border-left: 3px solid var(--gold);
-        }
-        .log-entry.success { border-left-color: var(--success); }
-        .log-entry.danger { border-left-color: var(--danger); color: var(--danger); }
+.subtitle{
+letter-spacing:4px;
+margin-bottom:40px;
+color:var(--green);
+}
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: var(--secondary);
-            padding: 30px;
-            border-radius: 10px;
-            border: 3px solid var(--gold);
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-        }
-    </style>
+.btn{
+padding:15px 35px;
+margin:10px;
+background:var(--panel2);
+border:2px solid var(--gold);
+color:white;
+font-weight:bold;
+cursor:pointer;
+transition:.25s;
+font-size:1em;
+border-radius:10px;
+}
+
+.btn:hover{
+background:var(--gold);
+color:black;
+transform:scale(1.05);
+box-shadow:0 0 20px var(--gold);
+}
+
+/* GAME */
+
+.game{
+display:none;
+height:100vh;
+flex-direction:column;
+}
+
+.game.active{
+display:flex;
+}
+
+.header{
+height:80px;
+background:var(--panel);
+border-bottom:3px solid var(--gold);
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 20px;
+}
+
+.logo{
+font-size:1.7em;
+font-weight:bold;
+color:var(--gold);
+}
+
+.stats{
+display:flex;
+gap:20px;
+}
+
+.stat{
+background:var(--panel2);
+padding:10px 18px;
+border-radius:10px;
+border:1px solid #2d3750;
+}
+
+.stat b{
+color:var(--gold);
+}
+
+.main{
+flex:1;
+display:flex;
+overflow:hidden;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:300px;
+background:var(--panel);
+padding:20px;
+overflow-y:auto;
+border-right:2px solid var(--gold);
+}
+
+.section-title{
+color:var(--gold);
+margin-bottom:15px;
+font-size:1.1em;
+border-bottom:1px solid #32405c;
+padding-bottom:10px;
+}
+
+.member{
+background:var(--panel2);
+padding:12px;
+border-radius:10px;
+margin-bottom:12px;
+border-left:4px solid var(--blue);
+transition:.25s;
+}
+
+.member:hover{
+transform:translateX(5px);
+background:#222d44;
+}
+
+/* CENTER */
+
+.center{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.tabs{
+display:flex;
+background:var(--panel);
+border-bottom:2px solid var(--gold);
+}
+
+.tab{
+flex:1;
+padding:15px;
+text-align:center;
+cursor:pointer;
+font-weight:bold;
+transition:.2s;
+}
+
+.tab.active{
+background:var(--gold);
+color:black;
+}
+
+.content{
+flex:1;
+padding:20px;
+overflow:auto;
+display:none;
+}
+
+.content.active{
+display:block;
+}
+
+.map{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
+
+.room{
+background:var(--panel2);
+padding:25px;
+border-radius:12px;
+border:2px solid #2c3955;
+cursor:pointer;
+transition:.25s;
+position:relative;
+overflow:hidden;
+}
+
+.room:hover{
+transform:scale(1.03);
+border-color:var(--gold);
+}
+
+.room.locked{
+opacity:.5;
+}
+
+.room.cleared{
+border-color:var(--green);
+background:rgba(0,210,160,.1);
+}
+
+.room::after{
+content:"";
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:
+linear-gradient(90deg,
+transparent,
+rgba(255,255,255,.08),
+transparent);
+transition:1s;
+}
+
+.room:hover::after{
+left:100%;
+}
+
+.actions{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+}
+
+.action{
+background:var(--panel2);
+padding:18px;
+border-radius:12px;
+cursor:pointer;
+border:2px solid #2d3c58;
+transition:.25s;
+}
+
+.action:hover{
+border-color:var(--gold);
+transform:translateY(-3px);
+}
+
+.action h3{
+color:var(--gold);
+margin-bottom:8px;
+}
+
+/* RIGHT */
+
+.right{
+width:300px;
+background:var(--panel);
+padding:20px;
+border-left:2px solid var(--gold);
+overflow:auto;
+}
+
+.progress-box{
+background:var(--panel2);
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+.progress{
+width:100%;
+height:25px;
+background:#0d111b;
+border-radius:20px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.progress-fill{
+height:100%;
+width:10%;
+background:
+linear-gradient(90deg,
+var(--green),
+var(--blue));
+display:flex;
+justify-content:center;
+align-items:center;
+font-weight:bold;
+transition:.5s;
+}
+
+.log{
+background:#0e1420;
+padding:10px;
+border-radius:10px;
+height:420px;
+overflow:auto;
+}
+
+.log-entry{
+background:var(--panel2);
+padding:10px;
+margin-bottom:8px;
+border-left:4px solid var(--gold);
+border-radius:5px;
+font-size:.9em;
+}
+
+.log-entry.success{
+border-color:var(--green);
+}
+
+.log-entry.danger{
+border-color:var(--red);
+color:#ff8b98;
+}
+
+/* MODAL */
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.8);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:50;
+}
+
+.modal.active{
+display:flex;
+}
+
+.modal-box{
+background:var(--panel);
+padding:30px;
+border-radius:15px;
+width:500px;
+max-width:90%;
+border:2px solid var(--gold);
+text-align:center;
+animation:popup .3s;
+}
+
+@keyframes popup{
+from{
+transform:scale(.7);
+opacity:0;
+}
+to{
+transform:scale(1);
+opacity:1;
+}
+}
+
+.modal-box h2{
+color:var(--gold);
+margin-bottom:15px;
+}
+
+.inventory-item{
+background:var(--panel2);
+padding:12px;
+margin-bottom:10px;
+border-radius:10px;
+border-left:4px solid var(--green);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+.main{
+flex-direction:column;
+}
+
+.sidebar,
+.right{
+width:100%;
+height:220px;
+border:none;
+}
+
+.map{
+grid-template-columns:1fr;
+}
+
+.actions{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
 </head>
+
 <body>
 
-    <!-- MENÚ PRINCIPAL -->
-    <div class="main-menu" id="mainMenu">
-        <h1 class="title-game">🎭 EL HEIST VIP</h1>
-        <p class="subtitle">THE GRAND LUNAR CASINO HEIST</p>
-        <div class="menu-buttons">
-            <button class="btn" onclick="startGame()">INICIAR ATRACO</button>
-            <button class="btn" onclick="showInstructions()">INSTRUCCIONES</button>
-        </div>
-    </div>
+<div class="container">
 
-    <!-- JUEGO -->
-    <div class="game-container" id="gameContainer">
-        <div class="header">
-            <div class="game-title">🎭 EL HEIST VIP</div>
-            <div class="game-stats">
-                <div class="stat">
-                    <span class="stat-label">TURNO</span>
-                    <span class="stat-value" id="turnDisplay">1/12</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">PA</span>
-                    <span class="stat-value" id="paDisplay">25</span>
-                </div>
-                <div class="turn-indicator" id="alertLevel">NIVEL DE ALERTA: BAJO</div>
-            </div>
-        </div>
+<!-- MENU -->
 
-        <div class="main-content">
-            <!-- Sidebar Izquierdo -->
-            <div class="sidebar">
-                <div class="section-title">👥 TU EQUIPO</div>
-                <div id="teamList"></div>
-                <button class="btn" onclick="advanceTurn()" style="width:100%; margin-top:20px;">
-                    ⏭️ SIGUIENTE TURNO
-                </button>
-            </div>
+<div class="main-menu" id="menu">
 
-            <!-- Área Central -->
-            <div class="game-area">
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab(0)">MAPA</button>
-                    <button class="tab" onclick="switchTab(1)">ACCIONES</button>
-                    <button class="tab" onclick="switchTab(2)">MISIONES</button>
-                </div>
+<h1 class="title">🎭 EL HEIST VIP</h1>
 
-                <!-- TAB MAPA -->
-                <div class="tab-content active" id="tab0">
-                    <h2 style="color:var(--gold); margin-bottom:15px;">Plano del Casino Lunar</h2>
-                    <div class="map-container" id="mapContainer"></div>
-                </div>
+<p class="subtitle">
+THE GRAND CASINO CYBER HEIST
+</p>
 
-                <!-- TAB ACCIONES -->
-                <div class="tab-content" id="tab1">
-                    <h2 style="color:var(--gold); margin-bottom:15px;">Acciones Disponibles</h2>
-                    <div class="actions-grid" id="actionsGrid"></div>
-                </div>
+<button class="btn" onclick="startGame()">
+🚀 INICIAR HEIST
+</button>
 
-                <!-- TAB MISIONES -->
-                <div class="tab-content" id="tab2">
-                    <h2 style="color:var(--gold); margin-bottom:15px;">Objetivos del Heist</h2>
-                    <div id="missionsList"></div>
-                </div>
-            </div>
+<button class="btn" onclick="showInstructions()">
+📜 INSTRUCCIONES
+</button>
 
-            <!-- Sidebar Derecho -->
-            <div class="right-sidebar">
-                <div class="section-title">PROGRESO</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width:15%">15%</div>
-                </div>
-                <div class="section-title" style="margin-top:25px;">LOG</div>
-                <div id="logContainer" style="max-height:400px; overflow-y:auto;"></div>
-            </div>
-        </div>
-    </div>
+</div>
 
-    <!-- MODAL -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h2 class="modal-title" id="modalTitle"></h2>
-            <p class="modal-text" id="modalText"></p>
-            <div class="modal-buttons" id="modalButtons"></div>
-        </div>
-    </div>
+<!-- GAME -->
 
-    <script>
-        let game = {
-            turn: 1,
-            maxTurns: 12,
-            pa: 25,
-            alertLevel: 0,
-            progress: 15,
-            team: [
-                {name: "Raven", role: "Infiltradora", pa: 6, skill: "Sigilo"},
-                {name: "Ghost", role: "Hacker", pa: 5, skill: "Tecnología"},
-                {name: "Titan", role: "Fuerza", pa: 4, skill: "Combate"}
-            ],
-            clearedLevels: [],
-            missions: [
-                {id:1, title:"Desactivar Cámaras", completed:false},
-                {id:2, title:"Robar la Bóveda Principal", completed:false},
-                {id:3, title:"Escapar por Helipuerto", completed:false}
-            ]
-        };
+<div class="game" id="game">
 
-        function startGame() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('gameContainer').classList.add('active');
-            initGame();
-        }
+<div class="header">
 
-        function initGame() {
-            updateUI();
-            renderTeam();
-            renderMap();
-            renderActions();
-            renderMissions();
-            addLog("El heist ha comenzado...", "success");
-        }
+<div class="logo">
+🎭 EL HEIST VIP
+</div>
 
-        function updateUI() {
-            document.getElementById('turnDisplay').textContent = `${game.turn}/${game.maxTurns}`;
-            document.getElementById('paDisplay').textContent = game.pa;
-            
-            const alertEl = document.getElementById('alertLevel');
-            alertEl.textContent = game.alertLevel < 3 ? "NIVEL DE ALERTA: BAJO" : 
-                                 game.alertLevel < 6 ? "NIVEL DE ALERTA: MEDIO" : "¡ALERTA MÁXIMA!";
-            alertEl.style.background = game.alertLevel > 5 ? 'var(--danger)' : 'var(--warning)';
-            
-            document.getElementById('progressFill').style.width = game.progress + '%';
-            document.getElementById('progressFill').textContent = game.progress + '%';
-        }
+<div class="stats">
 
-        function renderTeam() {
-            const container = document.getElementById('teamList');
-            container.innerHTML = '';
-            game.team.forEach((member, i) => {
-                const div = document.createElement('div');
-                div.className = 'team-member';
-                div.innerHTML = `
-                    <div class="member-name">${member.name}</div>
-                    <div class="member-skill">${member.role} - ${member.skill}</div>
-                    <div class="member-pa">PA: ${member.pa}</div>
-                `;
-                container.appendChild(div);
-            });
-        }
+<div class="stat">
+💰 DINERO:
+<b id="money">5000</b>
+</div>
 
-        function renderMap() {
-            const container = document.getElementById('mapContainer');
-            container.innerHTML = `
-                <div class="map-level" onclick="enterLevel(1)">Entrada Principal</div>
-                <div class="map-level" onclick="enterLevel(2)">Sala de Máquinas</div>
-                <div class="map-level" onclick="enterLevel(3)">Bóveda VIP</div>
-                <div class="map-level" onclick="enterLevel(4)">Helipuerto</div>
-            `;
-        }
+<div class="stat">
+⚡ PA:
+<b id="pa">25</b>
+</div>
 
-        function renderActions() {
-            const actions = [
-                {name:"Infiltración Sigilosa", cost:4, desc:"Avanza sin levantar sospechas"},
-                {name:"Hackear Sistema", cost:5, desc:"Reduce nivel de alerta"},
-                {name:"Distracción", cost:3, desc:"Baja temporalmente la alerta"},
-                {name:"Robar Objetos", cost:6, desc:"Aumenta progreso"}
-            ];
-            
-            const container = document.getElementById('actionsGrid');
-            container.innerHTML = '';
-            actions.forEach(act => {
-                const card = document.createElement('div');
-                card.className = 'action-card';
-                card.innerHTML = `
-                    <div class="action-name">${act.name}</div>
-                    <div class="action-cost">PA: ${act.cost}</div>
-                    <div class="action-desc">${act.desc}</div>
-                `;
-                card.onclick = () => performAction(act);
-                container.appendChild(card);
-            });
-        }
+<div class="stat">
+🚨 ALERTA:
+<b id="alert">0%</b>
+</div>
 
-        function performAction(action) {
-            if (game.pa < action.cost) {
-                showModal("PA Insuficiente", "No tienes suficientes puntos de acción.", "Cerrar");
-                return;
-            }
-            game.pa -= action.cost;
-            game.progress = Math.min(100, game.progress + 8);
-            game.alertLevel += 1;
-            
-            addLog(`Ejecutaste: ${action.name}`, "success");
-            updateUI();
-        }
+<div class="stat">
+📅 TURNO:
+<b id="turn">1</b>
+</div>
 
-        function renderMissions() {
-            const container = document.getElementById('missionsList');
-            container.innerHTML = '';
-            game.missions.forEach(m => {
-                const div = document.createElement('div');
-                div.className = `mission-item ${m.completed ? 'completed' : ''}`;
-                div.innerHTML = `<strong>${m.title}</strong>`;
-                container.appendChild(div);
-            });
-        }
+</div>
 
-        function enterLevel(level) {
-            showModal("Nivel " + level, "¿Quieres iniciar esta fase del heist?", 
-                `<button class="btn" onclick="completeLevel(${level});closeModal()">Sí, entrar</button>
-                 <button class="btn" onclick="closeModal()">Cancelar</button>`);
-        }
+</div>
 
-        function completeLevel(level) {
-            if (!game.clearedLevels.includes(level)) {
-                game.clearedLevels.push(level);
-                game.progress += 20;
-                addLog(`¡Nivel ${level} completado!`, "success");
-                updateUI();
-            }
-            closeModal();
-        }
+<div class="main">
 
-        function advanceTurn() {
-            game.turn++;
-            game.pa = 25 + Math.floor(game.turn / 3);
-            game.alertLevel = Math.max(0, game.alertLevel - 1);
-            
-            addLog(`Turno ${game.turn} comenzado`, "success");
-            updateUI();
+<!-- LEFT -->
 
-            if (game.turn >= game.maxTurns) {
-                showModal("FIN DEL JUEGO", game.progress >= 80 ? 
-                    "¡Felicidades! Lograste el gran heist." : 
-                    "El tiempo se acabó... Fallaste el heist.");
-            }
-        }
+<div class="sidebar">
 
-        function addLog(message, type = "") {
-            const log = document.getElementById('logContainer');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.textContent = `> ${message}`;
-            log.appendChild(entry);
-            log.scrollTop = log.scrollHeight;
-        }
+<div class="section-title">
+👥 EQUIPO
+</div>
 
-        function switchTab(tabIndex) {
-            document.querySelectorAll('.tab').forEach((t, i) => {
-                t.classList.toggle('active', i === tabIndex);
-            });
-            document.querySelectorAll('.tab-content').forEach((c, i) => {
-                c.classList.toggle('active', i === tabIndex);
-            });
-        }
+<div id="team"></div>
 
-        function showModal(title, text, buttons = "Cerrar") {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalText').innerHTML = text;
-            document.getElementById('modalButtons').innerHTML = buttons;
-            document.getElementById('modal').classList.add('active');
-        }
+<button class="btn"
+style="width:100%;"
+onclick="nextTurn()">
+⏭ SIGUIENTE TURNO
+</button>
 
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
+</div>
 
-        function showInstructions() {
-            showModal("Instrucciones", 
-                "Planifica tu atraco en 12 turnos.<br><br>Administra tus PA, mantén baja la alerta y completa los objetivos.");
-        }
+<!-- CENTER -->
 
-        // Cerrar modal con Escape
-        document.addEventListener('keydown', e => {
-            if (e.key === "Escape") closeModal();
-        });
-    </script>
+<div class="center">
+
+<div class="tabs">
+
+<div class="tab active"
+onclick="changeTab(0)">
+🗺 MAPA
+</div>
+
+<div class="tab"
+onclick="changeTab(1)">
+⚡ ACCIONES
+</div>
+
+<div class="tab"
+onclick="changeTab(2)">
+🎯 MISIONES
+</div>
+
+<div class="tab"
+onclick="changeTab(3)">
+🎒 INVENTARIO
+</div>
+
+</div>
+
+<!-- MAP -->
+
+<div class="content active" id="tab0">
+
+<h2 style="color:var(--gold);margin-bottom:15px;">
+CASINO LUNAR
+</h2>
+
+<div class="map" id="map"></div>
+
+</div>
+
+<!-- ACTIONS -->
+
+<div class="content" id="tab1">
+
+<h2 style="color:var(--gold);margin-bottom:15px;">
+ACCIONES
+</h2>
+
+<div class="actions" id="actions"></div>
+
+</div>
+
+<!-- MISSIONS -->
+
+<div class="content" id="tab2">
+
+<h2 style="color:var(--gold);margin-bottom:15px;">
+OBJETIVOS
+</h2>
+
+<div id="missions"></div>
+
+</div>
+
+<!-- INVENTORY -->
+
+<div class="content" id="tab3">
+
+<h2 style="color:var(--gold);margin-bottom:15px;">
+INVENTARIO
+</h2>
+
+<div id="inventory"></div>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="right">
+
+<div class="section-title">
+📊 PROGRESO
+</div>
+
+<div class="progress-box">
+
+Heist completado
+
+<div class="progress">
+
+<div class="progress-fill"
+id="progressFill">
+10%
+</div>
+
+</div>
+
+</div>
+
+<div class="section-title">
+📡 LOG DEL HEIST
+</div>
+
+<div class="log"
+id="log">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal"
+id="modal">
+
+<div class="modal-box">
+
+<h2 id="modalTitle">
+TÍTULO
+</h2>
+
+<p id="modalText">
+...
+</p>
+
+<br>
+
+<div id="modalButtons"></div>
+
+</div>
+
+</div>
+
+<script>
+
+const game={
+
+money:5000,
+pa:25,
+alert:0,
+turn:1,
+progress:10,
+
+team:[
+{
+name:"RAVEN",
+role:"Infiltradora",
+skill:"Sigilo"
+},
+{
+name:"GHOST",
+role:"Hacker",
+skill:"Tecnología"
+},
+{
+name:"TITAN",
+role:"Asalto",
+skill:"Combate"
+},
+{
+name:"ZERO",
+role:"Ingeniero",
+skill:"Explosivos"
+}
+],
+
+rooms:[
+{
+id:1,
+name:"Entrada Principal",
+done:false,
+locked:false
+},
+{
+id:2,
+name:"Sala de Cámaras",
+done:false,
+locked:false
+},
+{
+id:3,
+name:"Centro de Seguridad",
+done:false,
+locked:false
+},
+{
+id:4,
+name:"Zona VIP",
+done:false,
+locked:true
+},
+{
+id:5,
+name:"Bóveda Central",
+done:false,
+locked:true
+},
+{
+id:6,
+name:"Helipuerto",
+done:false,
+locked:true
+}
+],
+
+missions:[
+{
+text:"Desactivar cámaras",
+done:false
+},
+{
+text:"Robar datos secretos",
+done:false
+},
+{
+text:"Abrir bóveda central",
+done:false
+},
+{
+text:"Escapar del casino",
+done:false
+}
+],
+
+inventory:[
+"🔑 Tarjeta maestra",
+"💻 Malware militar"
+]
+
+};
+
+/* START */
+
+function startGame(){
+
+document.getElementById("menu")
+.style.display="none";
+
+document.getElementById("game")
+.classList.add("active");
+
+renderAll();
+
+addLog(
+"🎭 El heist ha comenzado...",
+"success"
+);
+
+}
+
+/* RENDER */
+
+function renderAll(){
+
+renderStats();
+renderTeam();
+renderMap();
+renderActions();
+renderMissions();
+renderInventory();
+
+}
+
+function renderStats(){
+
+document.getElementById("money")
+.innerText=game.money;
+
+document.getElementById("pa")
+.innerText=game.pa;
+
+document.getElementById("alert")
+.innerText=game.alert+"%";
+
+document.getElementById("turn")
+.innerText=game.turn;
+
+document.getElementById("progressFill")
+.style.width=game.progress+"%";
+
+document.getElementById("progressFill")
+.innerText=game.progress+"%";
+
+}
+
+/* TEAM */
+
+function renderTeam(){
+
+const div=
+document.getElementById("team");
+
+div.innerHTML="";
+
+game.team.forEach(m=>{
+
+div.innerHTML+=`
+<div class="member">
+
+<h3>${m.name}</h3>
+
+<p>${m.role}</p>
+
+<small>${m.skill}</small>
+
+</div>
+`;
+
+});
+
+}
+
+/* MAP */
+
+function renderMap(){
+
+const div=
+document.getElementById("map");
+
+div.innerHTML="";
+
+game.rooms.forEach(r=>{
+
+div.innerHTML+=`
+<div class="room
+${r.done?"cleared":""}
+${r.locked?"locked":""}"
+
+onclick="enterRoom(${r.id})">
+
+<h3>${r.name}</h3>
+
+<p>
+${r.done?"COMPLETADO":"DISPONIBLE"}
+</p>
+
+</div>
+`;
+
+});
+
+}
+
+/* ACTIONS */
+
+const actions=[
+
+{
+name:"Hackear sistema",
+cost:5,
+effect(){
+game.alert=
+Math.max(0,
+game.alert-10);
+
+game.progress+=5;
+
+addLog(
+"💻 Sistema hackeado",
+"success"
+);
+}
+},
+
+{
+name:"Robar dinero",
+cost:4,
+effect(){
+
+const amount=
+Math.floor(Math.random()*3000)+1000;
+
+game.money+=amount;
+
+game.alert+=5;
+
+addLog(
+"💰 Robaste $"+amount,
+"success"
+);
+}
+},
+
+{
+name:"Neutralizar guardias",
+cost:6,
+effect(){
+
+game.alert+=8;
+
+game.progress+=8;
+
+addLog(
+"🔫 Guardias eliminados"
+);
+}
+},
+
+{
+name:"Desactivar alarmas",
+cost:7,
+effect(){
+
+game.alert=
+Math.max(0,
+game.alert-20);
+
+addLog(
+"🚨 Alarmas desactivadas",
+"success"
+);
+}
+}
+
+];
+
+function renderActions(){
+
+const div=
+document.getElementById("actions");
+
+div.innerHTML="";
+
+actions.forEach((a,i)=>{
+
+div.innerHTML+=`
+<div class="action"
+onclick="doAction(${i})">
+
+<h3>${a.name}</h3>
+
+<p>
+Costo: ${a.cost} PA
+</p>
+
+</div>
+`;
+
+});
+
+}
+
+function doAction(i){
+
+const a=actions[i];
+
+if(game.pa<a.cost){
+
+showModal(
+"⚠ SIN PA",
+"No tienes suficientes puntos."
+);
+
+return;
+}
+
+game.pa-=a.cost;
+
+a.effect();
+
+randomEvent();
+
+renderStats();
+
+}
+
+/* MISSIONS */
+
+function renderMissions(){
+
+const div=
+document.getElementById("missions");
+
+div.innerHTML="";
+
+game.missions.forEach(m=>{
+
+div.innerHTML+=`
+<div class="inventory-item">
+
+${m.done?"✅":"❌"}
+${m.text}
+
+</div>
+`;
+
+});
+
+}
+
+/* INVENTORY */
+
+function renderInventory(){
+
+const div=
+document.getElementById("inventory");
+
+div.innerHTML="";
+
+game.inventory.forEach(i=>{
+
+div.innerHTML+=`
+<div class="inventory-item">
+${i}
+</div>
+`;
+
+});
+
+}
+
+/* ROOM */
+
+function enterRoom(id){
+
+const room=
+game.rooms.find(r=>r.id===id);
+
+if(room.locked){
+
+showModal(
+"🔒 BLOQUEADO",
+"Debes completar zonas anteriores."
+);
+
+return;
+}
+
+if(!room.done){
+
+room.done=true;
+
+game.progress+=15;
+
+game.money+=2000;
+
+addLog(
+"🏆 Completaste "+
+room.name,
+"success"
+);
+
+if(id<game.rooms.length){
+
+game.rooms[id].locked=false;
+
+}
+
+if(id===5){
+
+game.missions[2].done=true;
+
+}
+
+if(id===6){
+
+game.missions[3].done=true;
+
+victory();
+
+}
+
+renderAll();
+
+}
+
+}
+
+/* TURN */
+
+function nextTurn(){
+
+game.turn++;
+
+game.pa=25;
+
+game.alert=
+Math.max(0,
+game.alert-5);
+
+addLog(
+"📅 Nuevo turno"
+);
+
+if(game.alert>=100){
+
+gameOver();
+
+}
+
+renderStats();
+
+}
+
+/* EVENTS */
+
+function randomEvent(){
+
+const chance=Math.random();
+
+if(chance<0.25){
+
+game.alert+=10;
+
+addLog(
+"🚨 Un guardia sospecha de ti",
+"danger"
+);
+
+}
+
+if(chance>0.85){
+
+const loot=
+["💎 Diamante",
+"🔫 Pistola táctica",
+"💾 Datos secretos"];
+
+const item=
+loot[
+Math.floor(
+Math.random()*loot.length
+)
+];
+
+game.inventory.push(item);
+
+addLog(
+"🎁 Encontraste: "+item,
+"success"
+);
+
+renderInventory();
+
+}
+
+}
+
+/* LOG */
+
+function addLog(text,type=""){
+
+const log=
+document.getElementById("log");
+
+log.innerHTML+=`
+<div class="log-entry ${type}">
+${text}
+</div>
+`;
+
+log.scrollTop=
+log.scrollHeight;
+
+}
+
+/* TABS */
+
+function changeTab(i){
+
+document.querySelectorAll(".tab")
+.forEach((t,index)=>{
+
+t.classList.toggle(
+"active",
+index===i
+);
+
+});
+
+document.querySelectorAll(".content")
+.forEach((c,index)=>{
+
+c.classList.toggle(
+"active",
+index===i
+);
+
+});
+
+}
+
+/* MODAL */
+
+function showModal(title,text){
+
+document.getElementById("modal")
+.classList.add("active");
+
+document.getElementById("modalTitle")
+.innerText=title;
+
+document.getElementById("modalText")
+.innerHTML=text;
+
+document.getElementById("modalButtons")
+.innerHTML=`
+<button class="btn"
+onclick="closeModal()">
+Cerrar
+</button>
+`;
+
+}
+
+function closeModal(){
+
+document.getElementById("modal")
+.classList.remove("active");
+
+}
+
+/* ENDINGS */
+
+function victory(){
+
+showModal(
+"🏆 HEIST COMPLETADO",
+"Lograste escapar con el botín."
+);
+
+addLog(
+"🎉 ATRACO PERFECTO",
+"success"
+);
+
+}
+
+function gameOver(){
+
+showModal(
+"💀 GAME OVER",
+"La policía rodeó el casino."
+);
+
+addLog(
+"🚔 HEIST FALLIDO",
+"danger"
+);
+
+}
+
+/* INSTRUCTIONS */
+
+function showInstructions(){
+
+showModal(
+"📜 INSTRUCCIONES",
+`
+Completa el atraco antes de que
+la alerta llegue al 100%.
+
+✔ Gestiona PA
+✔ Completa salas
+✔ Consigue dinero
+✔ Escapa vivo
+`
+);
+
+}
+
+</script>
+
 </body>
 </html>
