@@ -33,12 +33,52 @@ canvas{border:3px solid #00ffcc;border-radius:20px;background:black;box-shadow:0
 .mod-badge.active-mod{background:#00ffcc22;color:#00ffcc;border:1px solid #00ffcc44;}
 .mod-badge.inactive-mod{background:#ff000022;color:#ff4444;border:1px solid #ff444444;}
 .notif{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#00ffcc;color:black;padding:10px 24px;border-radius:12px;font-weight:bold;z-index:999;display:none;}
+
+/* PANTALLA DE BENDICION DIVINA */
+#godBlessing{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;
+  background:radial-gradient(ellipse at center, rgba(255,215,0,0.25) 0%, rgba(0,0,0,0.97) 70%);
+  display:none;z-index:9999;
+  flex-direction:column;align-items:center;justify-content:center;
+  animation:godFadeIn 0.8s ease;
+}
+@keyframes godFadeIn{from{opacity:0;transform:scale(0.85);}to{opacity:1;transform:scale(1);}}
+@keyframes godGlow{0%,100%{text-shadow:0 0 30px #ffd700,0 0 60px #ffaa00;}50%{text-shadow:0 0 60px #ffffff,0 0 120px #ffd700;}}
+@keyframes rayRotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.god-rays{position:absolute;width:500px;height:500px;animation:rayRotate 8s linear infinite;opacity:0.3;}
+.god-figure{font-size:110px;z-index:2;animation:godGlow 2s ease-in-out infinite;filter:drop-shadow(0 0 40px #ffd700);}
+.god-title{font-size:42px;font-weight:900;color:#ffd700;z-index:2;margin-top:20px;letter-spacing:4px;animation:godGlow 2s ease-in-out infinite;}
+.god-subtitle{font-size:22px;color:#fff;z-index:2;margin-top:12px;text-align:center;max-width:400px;line-height:1.5;text-shadow:0 0 20px #ffd700;}
+.god-bar{width:300px;height:6px;background:#333;border-radius:10px;margin-top:30px;z-index:2;overflow:hidden;}
+.god-bar-fill{height:100%;background:linear-gradient(90deg,#ffd700,#fff,#ffd700);border-radius:10px;width:0%;transition:width 0.1s linear;box-shadow:0 0 10px #ffd700;}
+.god-hint{font-size:13px;color:#aaa;margin-top:10px;z-index:2;}
 </style>
 </head>
 <body>
- 
+
+<!-- PANTALLA DIOS -->
+<div id="godBlessing">
+  <svg class="god-rays" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(250,250)">
+      <line x1="0" y1="-240" x2="0" y2="240" stroke="#ffd700" stroke-width="2"/>
+      <line x1="-240" y1="0" x2="240" y2="0" stroke="#ffd700" stroke-width="2"/>
+      <line x1="-170" y1="-170" x2="170" y2="170" stroke="#ffd700" stroke-width="2"/>
+      <line x1="170" y1="-170" x2="-170" y2="170" stroke="#ffd700" stroke-width="2"/>
+      <line x1="-220" y1="-90" x2="220" y2="90" stroke="#ffd700" stroke-width="1.5"/>
+      <line x1="220" y1="-90" x2="-220" y2="90" stroke="#ffd700" stroke-width="1.5"/>
+      <line x1="-90" y1="-220" x2="90" y2="220" stroke="#ffd700" stroke-width="1.5"/>
+      <line x1="90" y1="-220" x2="-90" y2="220" stroke="#ffd700" stroke-width="1.5"/>
+    </g>
+  </svg>
+  <div class="god-figure">🧔‍♂️</div>
+  <div class="god-title">✨ DIOS TE BENDICE ✨</div>
+  <div class="god-subtitle">Has desbloqueado la Skin más poderosa del universo.<br>Que la luz guíe tu camino, fiel jugador.</div>
+  <div class="god-bar"><div class="god-bar-fill" id="godBarFill"></div></div>
+  <div class="god-hint">La bendición dura 5 segundos...</div>
+</div>
+
 <div class="notif" id="notif"></div>
- 
+
 <div class="game-wrapper">
   <div class="side-ui">
     <div class="title">BLOCK DASH<br>CHAOS X</div>
@@ -63,7 +103,7 @@ canvas{border:3px solid #00ffcc;border-radius:20px;background:black;box-shadow:0
   </div>
   <canvas id="game" width="450" height="550"></canvas>
 </div>
- 
+
 <!-- SHOP -->
 <div class="modal" id="shopMenu">
   <h2>🛒 TIENDA EXTREMA</h2>
@@ -74,7 +114,7 @@ canvas{border:3px solid #00ffcc;border-radius:20px;background:black;box-shadow:0
   <div id="shopContainer"></div>
   <button onclick="closeShop()">✕ CERRAR</button>
 </div>
- 
+
 <!-- CODES -->
 <div class="modal" id="codesMenu">
   <h2>🎁 CÓDIGOS</h2>
@@ -90,7 +130,7 @@ canvas{border:3px solid #00ffcc;border-radius:20px;background:black;box-shadow:0
   </div>
   <button onclick="closeModal('codesMenu')" style="margin-top:10px;background:#333;color:#00ffcc;">✕ CERRAR</button>
 </div>
- 
+
 <!-- GAME OVER -->
 <div class="modal" id="gameOverMenu">
   <h2>💀 GAME OVER</h2>
@@ -98,7 +138,7 @@ canvas{border:3px solid #00ffcc;border-radius:20px;background:black;box-shadow:0
   <p id="rewardText" style="text-align:center;color:#ffcc00;margin-bottom:10px;"></p>
   <button onclick="restartGame()">🔄 REINICIAR</button>
 </div>
- 
+
 <script>
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
@@ -112,7 +152,7 @@ const gameOverMenu=document.getElementById("gameOverMenu");
 const finalScore=document.getElementById("finalScore");
 const rewardText=document.getElementById("rewardText");
 const shopContainer=document.getElementById("shopContainer");
- 
+
 // SAVE
 let coins=Number(localStorage.getItem("chaosCoins"))||0;
 let ownedSkins=JSON.parse(localStorage.getItem("ownedSkins"))||["cyan"];
@@ -120,16 +160,36 @@ let currentSkin=localStorage.getItem("currentSkin")||"cyan";
 let ownedMods=JSON.parse(localStorage.getItem("ownedMods"))||[];
 let equippedMods=JSON.parse(localStorage.getItem("equippedMods"))||[];
 let redeemedCodes=JSON.parse(localStorage.getItem("redeemedCodes"))||[];
- 
+
 // STATS
 let score=0,level=1,xp=0,paused=false,gameOver=false,reverseControls=false,rainbowHue=0;
 let activeShopTab="skins";
- 
+
 // PLAYER
 const player={x:190,y:470,w:40,h:40,speed:8};
 const enemy={x:100,y:-40,w:40,h:40,speed:5,multiplier:1};
 const keys={};
- 
+
+// ---- PANTALLA BENDICIÓN DIOS ----
+function showGodBlessing(onDone){
+  var overlay=document.getElementById("godBlessing");
+  var barFill=document.getElementById("godBarFill");
+  overlay.style.display="flex";
+  var duration=5000;
+  var start=Date.now();
+  var interval=setInterval(function(){
+    var elapsed=Date.now()-start;
+    var pct=Math.min(100,(elapsed/duration)*100);
+    barFill.style.width=pct+"%";
+    if(elapsed>=duration){
+      clearInterval(interval);
+      overlay.style.display="none";
+      barFill.style.width="0%";
+      if(onDone) onDone();
+    }
+  },50);
+}
+
 // CÓDIGOS DE RECOMPENSA
 const CODES={
   "CHAOS2024":{type:"coins",amount:500,desc:"💰 +500 monedas"},
@@ -149,7 +209,7 @@ const CODES={
   "BLOCKFAN":{type:"coins",amount:250,desc:"💰 +250 monedas"},
   "STARTPACK":{type:"bundle",coins:100,skins:["inferno","ocean"],desc:"🚀 STARTER PACK: 100 monedas + Inferno + Ocean"},
 };
- 
+
 // SKINS
 const skins={
   cyan:{color:"#00ffcc",glow:"#00ffcc",price:0},
@@ -170,11 +230,11 @@ const skins={
   rainbow:{color:"rainbow",glow:"#fff",price:3000},
   god:{color:"#ffffff",glow:"#ffd700",price:5000}
 };
- 
+
 // MODIFICADORES ALEATORIOS
 const randomModifiers=["NORMAL","TURBO","SLOW MOTION","MICRO PLAYER","MEGA PLAYER","REVERSE CONTROLS","EARTHQUAKE","HYPER SPEED","FLASH","DARKNESS","CHAOS MODE","SPINNING SCREEN"];
 let currentModifier="NORMAL";
- 
+
 // MODIFICADORES COMPRABLES
 const buyableMods={
   "FANTASMA":{icon:"👻",name:"FANTASMA",desc:"El enemigo te atraviesa una vez por partida sin hacer daño",price:300,effect:"Una vida extra contra colisiones",codeOnly:false},
@@ -184,41 +244,48 @@ const buyableMods={
   "TIEMPO_EXTRA":{icon:"⏱️",name:"TIEMPO EXTRA",desc:"Al perder, tienes 3 segundos para esquivar y revivir (1 vez)",price:600,effect:"1 segunda oportunidad por partida",codeOnly:true},
   "IMAN":{icon:"🧲",name:"IMÁN MEJORADO",desc:"(Versión código) Imán más potente: +5 monedas por esquiva",price:0,effect:"+5 monedas por esquiva",codeOnly:true}
 };
- 
+
 // Estado de mods activos en partida
 let modState={fantasmaUsed:false,shieldActive:false,shieldCooldown:0,extraTimeUsed:false,extraTimeActive:false,extraTimeTimer:0,bonusCoinsPerDodge:0,xpMultiplier:1};
- 
+
 function initModState(){
   modState={fantasmaUsed:false,shieldActive:false,shieldCooldown:0,extraTimeUsed:false,extraTimeActive:false,extraTimeTimer:0,bonusCoinsPerDodge:0,xpMultiplier:1};
   if(equippedMods.includes("IMÁN")||equippedMods.includes("IMAN")) modState.bonusCoinsPerDodge=equippedMods.includes("IMAN")?5:2;
   if(equippedMods.includes("DOBLE_XP")) modState.xpMultiplier=2;
   if(equippedMods.includes("ESCUDO")) modState.shieldActive=true;
 }
- 
+
 // NOTIFICACIÓN
 function showNotif(msg,color){
   color=color||"#00ffcc";
-  const n=document.getElementById("notif");
+  var n=document.getElementById("notif");
   n.textContent=msg;
   n.style.background=color;
   n.style.color=color==="#00ffcc"?"black":"white";
   n.style.display="block";
   setTimeout(function(){n.style.display="none";},2500);
 }
- 
+
 // CANJEAR CÓDIGO
 function redeemCode(){
-  const input=document.getElementById("codeInput");
-  const code=input.value.trim().toUpperCase();
+  var input=document.getElementById("codeInput");
+  var code=input.value.trim().toUpperCase();
   if(!code){showNotif("Introduce un código","#ff4444");return;}
   if(redeemedCodes.includes(code)){showNotif("❌ Código ya canjeado","#ff4444");return;}
-  const data=CODES[code];
+  var data=CODES[code];
   if(!data){showNotif("❌ Código inválido","#ff4444");return;}
   redeemedCodes.push(code);
   localStorage.setItem("redeemedCodes",JSON.stringify(redeemedCodes));
   input.value="";
+  var unlockedGod=false;
   if(data.type==="coins"){coins+=data.amount;saveCoins();}
-  else if(data.type==="skin"){if(!ownedSkins.includes(data.skin)){ownedSkins.push(data.skin);localStorage.setItem("ownedSkins",JSON.stringify(ownedSkins));}}
+  else if(data.type==="skin"){
+    if(!ownedSkins.includes(data.skin)){
+      ownedSkins.push(data.skin);
+      localStorage.setItem("ownedSkins",JSON.stringify(ownedSkins));
+      if(data.skin==="god") unlockedGod=true;
+    }
+  }
   else if(data.type==="mod"){if(!ownedMods.includes(data.mod)){ownedMods.push(data.mod);localStorage.setItem("ownedMods",JSON.stringify(ownedMods));}}
   else if(data.type==="bundle"){
     if(data.coins) coins+=data.coins;
@@ -229,15 +296,22 @@ function redeemCode(){
   updateRedeemedList();
   updateUI();
   generateShop();
-  showNotif("✅ "+data.desc,"#00ffcc");
+  if(unlockedGod){
+    document.getElementById("codesMenu").style.display="none";
+    showGodBlessing(function(){
+      showNotif("✅ "+data.desc,"#ffd700");
+    });
+  } else {
+    showNotif("✅ "+data.desc,"#00ffcc");
+  }
 }
- 
+
 function updateRedeemedList(){
-  const el=document.getElementById("redeemedList");
+  var el=document.getElementById("redeemedList");
   if(redeemedCodes.length===0){el.textContent="Ninguno aún";return;}
   el.innerHTML=redeemedCodes.map(function(c){return '<span style="background:#00ffcc22;padding:2px 8px;border-radius:6px;margin:2px;display:inline-block;">'+c+'</span>';}).join(" ");
 }
- 
+
 // TIENDA TABS
 function switchTab(tab,btn){
   activeShopTab=tab;
@@ -245,13 +319,13 @@ function switchTab(tab,btn){
   btn.classList.add("active");
   generateShop();
 }
- 
+
 function generateShop(){
   shopContainer.innerHTML="";
   if(activeShopTab==="skins") generateSkinsShop();
   else generateModsShop();
 }
- 
+
 function generateSkinsShop(){
   for(var skin in skins){
     var data=skins[skin];
@@ -269,7 +343,7 @@ function generateSkinsShop(){
     shopContainer.appendChild(div);
   }
 }
- 
+
 function generateModsShop(){
   var hint=document.createElement("div");
   hint.style.cssText="font-size:12px;color:#aaa;margin-bottom:12px;text-align:center;";
@@ -302,14 +376,14 @@ function generateModsShop(){
     shopContainer.appendChild(div);
   }
 }
- 
+
 generateShop();
 updateRedeemedList();
- 
+
 // CONTROLES
 window.addEventListener("keydown",function(e){keys[e.key]=true;if(e.key==="Escape")togglePause();});
 window.addEventListener("keyup",function(e){keys[e.key]=false;});
- 
+
 function movePlayer(){
   var left=keys["ArrowLeft"]||keys["a"];
   var right=keys["ArrowRight"]||keys["d"];
@@ -319,7 +393,7 @@ function movePlayer(){
   if(player.x<0) player.x=0;
   if(player.x>canvas.width-player.w) player.x=canvas.width-player.w;
 }
- 
+
 function moveEnemy(){
   enemy.y+=enemy.speed*enemy.multiplier;
   if(score>40) enemy.x+=Math.sin(Date.now()/100)*4;
@@ -340,7 +414,7 @@ function moveEnemy(){
     updateUI();
   }
 }
- 
+
 function activateRandomModifier(){
   reverseControls=false;
   player.w=40;player.h=40;player.speed=8;enemy.multiplier=1;
@@ -362,7 +436,7 @@ function activateRandomModifier(){
     case "SPINNING SCREEN":canvas.style.transform="rotate("+(Math.random()*8-4)+"deg)";break;
   }
 }
- 
+
 function drawPlayer(){
   var skin=skins[currentSkin];
   var color=skin.color;
@@ -385,7 +459,7 @@ function drawPlayer(){
     ctx.fillRect(player.x-3,player.y-3,player.w+6,player.h+6);
   }
 }
- 
+
 function drawEnemy(){
   ctx.fillStyle="#ff3333";
   ctx.shadowBlur=20;
@@ -393,11 +467,11 @@ function drawEnemy(){
   ctx.fillRect(enemy.x,enemy.y,enemy.w,enemy.h);
   ctx.shadowBlur=0;
 }
- 
+
 function collision(){
   return player.x<enemy.x+enemy.w&&player.x+player.w>enemy.x&&player.y<enemy.y+enemy.h&&player.y+player.h>enemy.y;
 }
- 
+
 function handleCollision(){
   if(equippedMods.includes("FANTASMA")&&!modState.fantasmaUsed){
     modState.fantasmaUsed=true;
@@ -421,7 +495,7 @@ function handleCollision(){
   }
   return true;
 }
- 
+
 function updateUI(){
   scoreEl.textContent=score;
   coinsEl.textContent=coins;
@@ -429,7 +503,7 @@ function updateUI(){
   xpFill.style.width=xp+"%";
   updateModEquipados();
 }
- 
+
 function updateModEquipados(){
   var el=document.getElementById("modEquipados");
   if(equippedMods.length===0){el.textContent="Ninguno";return;}
@@ -438,39 +512,59 @@ function updateModEquipados(){
     return mod?'<span style="margin-right:4px;">'+mod.icon+' '+mod.name+'</span>':"";
   }).join("<br>");
 }
- 
+
 function openShop(){paused=true;shopMenu.style.display="block";}
 function closeShop(){paused=false;shopMenu.style.display="none";loop();}
 function openCodes(){paused=true;document.getElementById("codesMenu").style.display="block";}
 function closeModal(id){document.getElementById(id).style.display="none";paused=false;loop();}
- 
+
 function buyMod(modKey,price){
   if(coins>=price){coins-=price;ownedMods.push(modKey);localStorage.setItem("ownedMods",JSON.stringify(ownedMods));saveCoins();generateShop();updateUI();showNotif("✅ Modificador desbloqueado");}
   else showNotif("❌ No tienes monedas","#ff4444");
 }
- 
+
 function equipMod(modKey){
   if(!equippedMods.includes(modKey)) equippedMods.push(modKey);
   localStorage.setItem("equippedMods",JSON.stringify(equippedMods));
   generateShop();updateModEquipados();
   showNotif("✅ "+buyableMods[modKey].name+" equipado");
 }
- 
+
 function unequipMod(modKey){
   equippedMods=equippedMods.filter(function(m){return m!==modKey;});
   localStorage.setItem("equippedMods",JSON.stringify(equippedMods));
   generateShop();updateModEquipados();
   showNotif("🔴 "+buyableMods[modKey].name+" desequipado");
 }
- 
+
 function buySkin(name,price){
-  if(coins>=price){coins-=price;ownedSkins.push(name);localStorage.setItem("ownedSkins",JSON.stringify(ownedSkins));saveCoins();equipSkin(name);generateShop();updateUI();showNotif("✅ Skin "+name+" comprada");}
-  else showNotif("❌ No tienes monedas","#ff4444");
+  if(coins>=price){
+    coins-=price;
+    ownedSkins.push(name);
+    localStorage.setItem("ownedSkins",JSON.stringify(ownedSkins));
+    saveCoins();
+    equipSkin(name);
+    generateShop();
+    updateUI();
+    if(name==="god"){
+      // Cierra la tienda antes de mostrar la bendición
+      shopMenu.style.display="none";
+      showGodBlessing(function(){
+        showNotif("✅ Skin GOD comprada — ¡Dios está contigo!","#ffd700");
+        paused=false;
+        loop();
+      });
+    } else {
+      showNotif("✅ Skin "+name+" comprada");
+    }
+  } else {
+    showNotif("❌ No tienes monedas","#ff4444");
+  }
 }
- 
+
 function equipSkin(name){currentSkin=name;localStorage.setItem("currentSkin",name);generateShop();}
 function saveCoins(){localStorage.setItem("chaosCoins",coins);}
- 
+
 function endGame(){
   gameOver=true;
   var reward=0;
@@ -481,10 +575,10 @@ function endGame(){
   gameOverMenu.style.display="block";
   updateUI();
 }
- 
+
 function togglePause(){paused=!paused;if(!paused)loop();}
 function restartGame(){location.reload();}
- 
+
 function loop(){
   if(paused||gameOver) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -508,11 +602,10 @@ function loop(){
   }
   requestAnimationFrame(loop);
 }
- 
+
 initModState();
 updateUI();
 loop();
 </script>
 </body>
 </html>
- 
