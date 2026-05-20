@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realm Quest VIP - Action RPG</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Pantalla de Carga -->
+    <div id="loadingScreen" class="screen active">
+        <div class="loading-container">
+            <h1>⚔️ REALM QUEST VIP ⚔️</h1>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p>Cargando tu aventura...</p>
+        </div>
+    </div>
+
+    <!-- Pantalla de Inicio -->
+    <div id="startScreen" class="screen">
+        <div class="start-container">
+            <h1>⚔️ REALM QUEST VIP ⚔️</h1>
+            <p>Bienvenido, viajero. Un mal antiguo amenaza el reino.</p>
+            <div class="character-selection">
+                <h2>Elige tu Héroe:</h2>
+                <div class="heroes">
+                    <button class="hero-btn" data-class="warrior">
+                        🛡️ Guerrero<br><small>Fuerza: +20% | Defensa: +15%</small>
+                    </button>
+                    <button class="hero-btn" data-class="mage">
+                        🔮 Mago<br><small>Magia: +25% | Salud: -10%</small>
+                    </button>
+                    <button class="hero-btn" data-class="rogue">
+                        🗡️ Pícaro<br><small>Velocidad: +25% | Crítico: +20%</small>
+                    </button>
+                </div>
+            </div>
+            <input type="text" id="playerName" placeholder="Ingresa tu nombre..." maxlength="15">
+            <button id="startBtn" class="btn-primary">Comenzar la Aventura</button>
+        </div>
+    </div>
+
+    <!-- Pantalla Principal del Juego -->
+    <div id="gameScreen" class="screen">
+        <div class="game-container">
+            <!-- Panel Lateral Izquierdo: Info del Jugador -->
+            <div class="left-panel">
+                <div class="player-card">
+                    <h3 id="playerTitle">Guerrero</h3>
+                    <p id="playerName2"></p>
+                    <div class="stats">
+                        <div class="stat">
+                            <label>Nivel:</label>
+                            <span id="playerLevel">1</span>
+                        </div>
+                        <div class="stat">
+                            <label>EXP:</label>
+                            <span id="playerExp">0/100</span>
+                        </div>
+                        <div class="stat">
+                            <label>Oro:</label>
+                            <span id="playerGold">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="health-mana">
+                    <div class="bar-container">
+                        <label>Salud</label>
+                        <div class="health-bar">
+                            <div class="health-fill" id="healthBar"></div>
+                        </div>
+                        <span id="healthText">100/100</span>
+                    </div>
+                    <div class="bar-container">
+                        <label>Maná</label>
+                        <div class="mana-bar">
+                            <div class="mana-fill" id="manaBar"></div>
+                        </div>
+                        <span id="manaText">50/50</span>
+                    </div>
+                </div>
+
+                <div class="inventory">
+                    <h4>📦 Inventario</h4>
+                    <div id="inventoryList"></div>
+                </div>
+
+                <div class="abilities">
+                    <h4>✨ Habilidades</h4>
+                    <div id="abilitiesList"></div>
+                </div>
+            </div>
+
+            <!-- Panel Central: Juego -->
+            <div class="center-panel">
+                <!-- Zona de Misiones -->
+                <div id="missionZone" class="game-zone">
+                    <div class="zone-header">
+                        <h2 id="zoneName">Plaza del Reino</h2>
+                        <p id="zoneDescription"></p>
+                    </div>
+                    <div id="missionList" class="mission-list"></div>
+                </div>
+
+                <!-- Zona de Combate -->
+                <div id="battleZone" class="game-zone hidden">
+                    <div class="battle-container">
+                        <div class="enemies-section">
+                            <h3>Enemigos</h3>
+                            <div id="enemiesList"></div>
+                        </div>
+                        <div class="combat-log">
+                            <h3>📜 Registro de Batalla</h3>
+                            <div id="combatLog"></div>
+                        </div>
+                        <div class="actions-section">
+                            <h3>Acciones</h3>
+                            <div id="actionsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Derecho: Quests y Estadísticas -->
+            <div class="right-panel">
+                <div class="quests-container">
+                    <h4>📋 Misiones Activas</h4>
+                    <div id="activeQuests"></div>
+                </div>
+
+                <div class="achievements">
+                    <h4>🏆 Logros</h4>
+                    <div id="achievementsList"></div>
+                </div>
+
+                <div class="stats-info">
+                    <h4>📊 Estadísticas</h4>
+                    <div id="statsInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/player.js"></script>
+    <script src="js/enemies.js"></script>
+    <script src="js/quests.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
