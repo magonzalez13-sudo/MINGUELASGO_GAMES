@@ -1,760 +1,652 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vapor Chronicles MASSIVE RPG</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <style>
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-    margin:0;
-    background:#050811;
-    color:white;
-    font-family:Segoe UI,Arial;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    overflow:hidden;
+  background:#020509;
+  color:#c9d8e8;
+  font-family:'Share Tech Mono',monospace;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  overflow-x:hidden;
 }
-
 h1{
-    color:#f1c40f;
-    margin:10px;
-    text-shadow:0 0 10px #f1c40f;
+  font-family:'Orbitron',sans-serif;
+  font-size:1.3rem;
+  color:#4af;
+  letter-spacing:4px;
+  padding:10px 0 6px;
+  text-transform:uppercase;
 }
-
 .layout{
-    display:grid;
-    grid-template-columns:660px 340px;
-    gap:10px;
+  display:grid;
+  grid-template-columns:648px 280px;
+  gap:10px;
+  padding:0 10px 10px;
 }
-
 canvas{
-    background:#000;
-    border:3px solid #1f2d44;
-    border-radius:6px;
+  display:block;
+  border:2px solid #1a3050;
+  border-radius:4px;
 }
-
 .sidebar{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
-
 .panel{
-    background:#0f1622;
-    border:2px solid #1f2d44;
-    border-radius:6px;
-    padding:10px;
+  background:#080f1a;
+  border:1px solid #1a3050;
+  border-radius:4px;
+  padding:8px 10px;
 }
-
 .panel h3{
-    margin:0 0 6px 0;
-    color:#f1c40f;
+  font-family:'Orbitron',sans-serif;
+  font-size:0.65rem;
+  letter-spacing:3px;
+  color:#4af;
+  margin-bottom:6px;
+  border-bottom:1px solid #1a3050;
+  padding-bottom:4px;
 }
-
-.stat{
-    display:flex;
-    justify-content:space-between;
-    margin:4px 0;
-    font-size:14px;
-}
-
+.stat{display:flex;justify-content:space-between;font-size:11px;padding:2px 0;color:#8aa}
+.stat span:last-child{color:#eef}
 .log{
-    width:640px;
-    background:black;
-    border:2px solid #1f2d44;
-    padding:8px;
-    color:#00ff90;
-    font-family:monospace;
-    margin-top:5px;
-    height:60px;
+  width:648px;
+  background:#010305;
+  border:1px solid #1a3050;
+  border-top:none;
+  padding:6px 10px;
+  color:#2f9;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  height:36px;
+  display:flex;align-items:center;
 }
-
+.log-inner{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%}
 button{
-    width:100%;
-    margin-top:5px;
-    padding:7px;
-    background:#2c3e50;
-    color:white;
-    border:none;
-    cursor:pointer;
-    border-radius:4px;
-    font-weight:bold;
+  width:100%;
+  margin-top:4px;
+  padding:6px;
+  background:#0a1828;
+  color:#9cf;
+  border:1px solid #1a3050;
+  cursor:pointer;
+  border-radius:3px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  transition:background 0.15s,border-color 0.15s;
 }
-
-button:hover{
-    background:#34495e;
-}
-
+button:hover{background:#0f2238;border-color:#2a6090}
+button:active{background:#0a2030}
 #battleOverlay{
-    position:absolute;
-    width:640px;
-    height:448px;
-    background:rgba(0,0,0,0.95);
-    display:none;
-    flex-direction:column;
-    justify-content:space-between;
-    padding:20px;
-    box-sizing:border-box;
+  position:absolute;
+  width:648px;
+  height:448px;
+  background:rgba(0,4,12,0.97);
+  display:none;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:16px;
+  border:1px solid #1a3050;
 }
-
-.battleTop{
-    display:flex;
-    justify-content:space-between;
-}
-
+.battleTop{display:flex;justify-content:space-between;gap:12px}
 .battleBox{
-    width:45%;
-    background:#111827;
-    border:2px solid #34495e;
-    padding:10px;
+  flex:1;
+  background:#060d18;
+  border:1px solid #1a3050;
+  padding:10px;
+  border-radius:3px;
 }
-
-.hpbg{
-    background:#555;
-    height:10px;
-    margin-top:5px;
+.battleBox .bname{font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#4af;letter-spacing:2px}
+.battleBox .blv{font-size:11px;color:#8aa;margin:2px 0 6px}
+.hpbg{background:#0a1828;height:8px;border-radius:2px;margin-top:4px;overflow:hidden}
+.hp{height:100%;border-radius:2px;transition:width 0.3s}
+#enemyHp{background:#e74c3c}
+#playerHp{background:#2ecc71}
+#battleText{
+  font-size:13px;
+  color:#eee;
+  text-align:center;
+  padding:10px;
+  min-height:40px;
+  display:flex;align-items:center;justify-content:center;
 }
-
-.hp{
-    background:#2ecc71;
-    height:100%;
-    width:100%;
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions button{
+  margin:0;
+  font-family:'Orbitron',sans-serif;
+  font-size:0.6rem;
+  letter-spacing:2px;
+  padding:10px;
 }
-
-.actions{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
+.tab-row{display:flex;gap:4px;margin-bottom:6px}
+.tab{
+  flex:1;padding:4px;background:#060d18;border:1px solid #1a3050;
+  border-radius:3px;cursor:pointer;font-size:10px;color:#8aa;text-align:center;
+  font-family:'Share Tech Mono',monospace;
 }
+.tab.active{background:#0a1828;color:#4af;border-color:#2a6090}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.monster-tag{
+  display:inline-block;background:#060d18;border:1px solid #1a3050;
+  border-radius:2px;padding:2px 6px;font-size:10px;color:#9cf;margin:2px;
+}
+.skill-btn{
+  margin:0;padding:5px 6px;font-size:10px;
+  background:#060d18;border:1px solid #1a3050;
+  color:#9cf;cursor:pointer;border-radius:3px;
+  font-family:'Share Tech Mono',monospace;
+  transition:background 0.15s;
+}
+.skill-btn:hover{background:#0f2238}
+.skills-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
 </style>
 </head>
-
 <body>
 
-<h1>VAPOR CHRONICLES MASSIVE RPG</h1>
+<h1>⬡ Vapor Chronicles ⬡</h1>
 
 <div class="layout">
 
-<div style="position:relative;">
-<canvas id="game" width="640" height="448"></canvas>
+<div style="position:relative;display:flex;flex-direction:column">
+<canvas id="game" width="648" height="448"></canvas>
+<div class="log"><span class="log-inner" id="log">▶ Bienvenido al mundo Vapor. Usa WASD o flechas para moverte.</span></div>
 
 <div id="battleOverlay">
-
-<div class="battleTop">
-
-<div class="battleBox">
-<div id="enemyName">Enemy</div>
-<div id="enemyLv">LV 1</div>
-<div class="hpbg">
-<div class="hp" id="enemyHp"></div>
+  <div class="battleTop">
+    <div class="battleBox">
+      <div class="bname" id="enemyName">—</div>
+      <div class="blv" id="enemyLv">LV 1</div>
+      <div style="font-size:11px;color:#8aa">HP: <span id="enemyHpNum">100</span></div>
+      <div class="hpbg"><div class="hp" id="enemyHp" style="width:100%"></div></div>
+    </div>
+    <div style="display:flex;align-items:center;color:#4af;font-family:'Orbitron',sans-serif;font-size:1.2rem">VS</div>
+    <div class="battleBox">
+      <div class="bname" id="playerTeamName">TU EQUIPO</div>
+      <div class="blv" id="playerLv">LV 1</div>
+      <div style="font-size:11px;color:#8aa">HP: <span id="playerHpNum">100</span></div>
+      <div class="hpbg"><div class="hp" id="playerHp" style="width:100%"></div></div>
+    </div>
+  </div>
+  <div id="battleText">¡Combate iniciado!</div>
+  <div>
+    <div class="skills-row" id="skillsRow"></div>
+    <div class="actions">
+      <button onclick="battleAction('attack')">⚔ ATACAR</button>
+      <button onclick="battleAction('heal')">✚ CURAR</button>
+      <button onclick="battleAction('capture')">◎ CAPTURAR</button>
+      <button onclick="battleAction('run')">↩ HUIR</button>
+    </div>
+  </div>
 </div>
-</div>
-
-<div class="battleBox">
-<div>TU EQUIPO</div>
-<div id="playerLv">LV 1</div>
-<div class="hpbg">
-<div class="hp" id="playerHp"></div>
-</div>
-</div>
-
-</div>
-
-<div id="battleText">¡Combate iniciado!</div>
-
-<div class="actions">
-<button onclick="battleAction('attack')">ATACAR</button>
-<button onclick="battleAction('heal')">CURAR</button>
-<button onclick="battleAction('capture')">CAPTURAR</button>
-<button onclick="battleAction('run')">HUIR</button>
-</div>
-
-</div>
-
-<div class="log" id="log">Bienvenido al mundo Vapor.</div>
-
 </div>
 
 <div class="sidebar">
 
-<div class="panel">
-<h3>MISIÓN</h3>
-<div id="missionText"></div>
+  <div class="panel">
+    <h3>MISIÓN</h3>
+    <div id="missionText" style="font-size:11px;color:#bcd;line-height:1.5"></div>
+    <div style="margin-top:6px">
+      <div style="font-size:10px;color:#8aa;margin-bottom:3px">PROGRESO MISIÓN</div>
+      <div class="hpbg"><div class="hp" id="missionBar" style="width:0%;background:#4af;transition:width 0.4s"></div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="tab-row">
+      <div class="tab active" onclick="switchTab('stats')">STATS</div>
+      <div class="tab" onclick="switchTab('team')">EQUIPO</div>
+      <div class="tab" onclick="switchTab('shop')">TIENDA</div>
+    </div>
+
+    <div class="tab-panel active" id="tab-stats">
+      <div class="stat"><span>Zona</span><span id="zone">—</span></div>
+      <div class="stat"><span>Nivel</span><span id="level">—</span></div>
+      <div class="stat"><span>EXP</span><span id="exp">—</span></div>
+      <div class="stat"><span>Dinero</span><span id="money">—</span></div>
+      <div class="stat"><span>Vaporballs</span><span id="balls">—</span></div>
+      <div class="stat"><span>Capturados</span><span id="caught">—</span></div>
+      <div class="stat"><span>Pasos</span><span id="steps">—</span></div>
+      <div class="stat"><span>Coords</span><span id="coords">—</span></div>
+      <div class="stat"><span>Clima</span><span id="weather">—</span></div>
+    </div>
+
+    <div class="tab-panel" id="tab-team">
+      <div style="font-size:10px;color:#8aa;margin-bottom:6px">MONSTRUOS CAPTURADOS:</div>
+      <div id="teamList" style="line-height:1.8"></div>
+      <div style="font-size:10px;color:#6a8;margin-top:6px" id="teamEmpty">Sin capturas aún.</div>
+    </div>
+
+    <div class="tab-panel" id="tab-shop">
+      <div style="font-size:10px;color:#4af;margin-bottom:6px">▶ TIENDA VAPOR</div>
+      <div class="stat"><span>Tus créditos</span><span id="shopMoney">—</span></div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px">
+        <button onclick="buyItem('ball')">Vaporball ×1 — 50$</button>
+        <button onclick="buyItem('balls5')">Vaporball ×5 — 200$</button>
+        <button onclick="buyItem('surf')">SURF — 300$</button>
+        <button onclick="buyItem('potion')">Poción HP+50 — 80$</button>
+        <button onclick="buyItem('xpboost')">XP ×2 (10 batallas) — 150$</button>
+        <button onclick="buyItem('repel')">Repelente (20 pasos) — 60$</button>
+      </div>
+    </div>
+
+  </div>
+
 </div>
-
-<div class="panel">
-<h3>ESTADÍSTICAS</h3>
-
-<div class="stat"><span>Zona:</span><span id="zone"></span></div>
-<div class="stat"><span>Nivel:</span><span id="level"></span></div>
-<div class="stat"><span>EXP:</span><span id="exp"></span></div>
-<div class="stat"><span>Dinero:</span><span id="money"></span></div>
-<div class="stat"><span>Capturados:</span><span id="caught"></span></div>
-<div class="stat"><span>Vaporballs:</span><span id="balls"></span></div>
-<div class="stat"><span>Coords:</span><span id="coords"></span></div>
-<div class="stat"><span>Clima:</span><span id="weather"></span></div>
-
-<button onclick="buyBalls()">Comprar Vaporball</button>
-<button onclick="buySurf()">Comprar Surf</button>
-
-</div>
-
-</div>
-
 </div>
 
 <script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+const TILE=32,COLS=Math.ceil(648/32),ROWS=Math.ceil(448/32);
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const zones=["Pueblo Inicial Alfa","Bosque Niebla Verde","Pantano Tóxico","Costa Vapor Azul","Ruinas del Titan","Monte Ceniza","Ciudad Neon-X","Laboratorio Omega","Desierto Carmesí","Puerto Oxidado","Valle Cristal","Templo Abisal","Cañón Eclipse","Fortaleza Vapor","Zona Industrial K-12","Bosque Espectral","Pradera Solar","Isla Trueno","Archipiélago Vapor","Cueva Infinita","Ciudad Central","Barrio Mecánico","Planta Nuclear","Lago Helado","Montaña Glacial","Ciudadela Celeste","Ruinas del Tiempo","Bosque de Acero","Base Militar Zenith","Zona Cero","Pantano Negro","Templo Antiguo","Desierto Dorado","Ciudad Mercurio","Puerto Fantasma","Cordillera Titan","Valle Perdido","Prisión Abandonada","Zona Experimental","Ciudad Arcadia","Isla Jurásica","Bosque Rojo","Ruinas Subterráneas","Fortaleza Obsidiana","Ciudad Prisma","Templo del Vapor Supremo","Océano Profundo","Isla Artificial","Volcán Omega","Bosque Gigante","Ciudad Holograma","Catedral Mecánica","Base Lunar","Dimensión Vapor","Núcleo del Mundo"];
+const monsters=["Vaporion","Hydrax","Voltaris","Cryon","Infernot","Omega Vapor","Spectron","Nebulon","Titan-X","Abyssal","Glitchon","Nullbeast","Arcana-X","Frostfang","Ironclad","Pyraxis","Shadowmeld","Quakeron","Luminos","Dreadnova"];
+const skills=[{name:"Rayo Vapor",dmg:[25,40],mp:20,desc:"Daño eléctrico"},{name:"Golpe Crítico",dmg:[35,55],mp:30,desc:"Alta potencia"},{name:"Ola Tóxica",dmg:[15,25],mp:10,desc:"Envenenamiento"},{name:"Megaexplosión",dmg:[50,80],mp:40,desc:"Daño masivo"}];
 
-const TILE = 32;
-const COLS = 20;
-const ROWS = 14;
-
-let weather = "Soleado";
-let timeCycle = 0;
-
-const zones = [
-"Pueblo Inicial Alfa",
-"Bosque Niebla Verde",
-"Pantano Tóxico",
-"Costa Vapor Azul",
-"Ruinas del Titan",
-"Monte Ceniza",
-"Ciudad Neon-X",
-"Laboratorio Omega",
-"Desierto Carmesí",
-"Puerto Oxidado",
-"Valle Cristal",
-"Templo Abisal",
-"Cañón Eclipse",
-"Fortaleza Vapor",
-"Zona Industrial K-12",
-"Bosque Espectral",
-"Pradera Solar",
-"Isla Trueno",
-"Archipiélago Vapor",
-"Cueva Infinita",
-"Ciudad Central",
-"Barrio Mecánico",
-"Planta Nuclear",
-"Lago Helado",
-"Montaña Glacial",
-"Ciudadela Celeste",
-"Ruinas del Tiempo",
-"Bosque de Acero",
-"Base Militar Zenith",
-"Zona Cero",
-"Pantano Negro",
-"Templo Antiguo",
-"Desierto Dorado",
-"Ciudad Mercurio",
-"Puerto Fantasma",
-"Cordillera Titan",
-"Valle Perdido",
-"Prisión Abandonada",
-"Zona Experimental",
-"Ciudad Arcadia",
-"Isla Jurásica",
-"Bosque Rojo",
-"Ruinas Subterráneas",
-"Fortaleza Obsidiana",
-"Ciudad Prisma",
-"Templo del Vapor Supremo",
-"Océano Profundo",
-"Isla Artificial",
-"Volcán Omega",
-"Bosque Gigante",
-"Ciudad Holograma",
-"Catedral Mecánica",
-"Base Lunar",
-"Dimensión Vapor",
-"Núcleo del Mundo",
-"Trono del Emperador Vapor"
-];
-
-const missions = [];
-
-for(let i=1;i<=100;i++){
-    missions.push("Completa la misión épica #" + i);
+const tileCache={};
+function tile(x,y){
+  const k=x+"|"+y;
+  if(tileCache[k]!==undefined) return tileCache[k];
+  if(x<0||y<0||x>800||y>800){tileCache[k]=2;return 2;}
+  if(x%25===0&&y%25===0){tileCache[k]=5;return 5;}
+  if(x%18===0){tileCache[k]=3;return 3;}
+  const n=Math.abs(Math.sin(x*12.989+y*78.233)*9999)%1;
+  let t=0;
+  if(n<0.25)t=1; else if(n<0.33)t=2; else if(n<0.38)t=4;
+  tileCache[k]=t;
+  return t;
 }
 
-const monsters = [
-"Vaporion",
-"Hydrax",
-"Voltaris",
-"Cryon",
-"Infernot",
-"Omega Vapor",
-"Spectron",
-"Nebulon",
-"Titan-X",
-"Abyssal"
-];
-
-const player = {
-    x:50,
-    y:50,
-    level:5,
-    exp:0,
-    money:500,
-    balls:10,
-    caught:0,
-    mission:1,
-    surf:false,
-    evolved:false
-};
-
-let playerHp = 100;
-let enemyHp = 100;
-let battle = false;
-
-let enemy = {
-    name:"",
-    level:1
-};
-
-function log(t){
-    document.getElementById("log").innerText = t;
+const grassDetails={};
+function getGrassDetails(wx,wy){
+  const k=wx+","+wy;
+  if(grassDetails[k]) return grassDetails[k];
+  const pts=[];
+  const r=Math.abs(Math.sin(wx*31.7+wy*17.3)*9999);
+  const count=Math.floor(r%4)+2;
+  for(let i=0;i<count;i++){
+    pts.push({
+      ox:Math.floor(Math.abs(Math.sin(wx*3+wy*7+i)*999)%30)+1,
+      oy:Math.floor(Math.abs(Math.cos(wx*5+wy*11+i)*999)%30)+1
+    });
+  }
+  grassDetails[k]=pts;
+  return pts;
 }
+
+let weather="Soleado";
+let timeCycle=0;
+let rainDrops=[];
+for(let i=0;i<150;i++) rainDrops.push({x:Math.random()*648,y:Math.random()*448,spd:3+Math.random()*4});
+
+const player={x:50,y:50,level:5,exp:0,money:500,balls:10,caught:0,mission:1,surf:false,steps:0,mp:60,maxMp:60,xpBoost:0,repel:0};
+const team=[];
+let playerHpVal=100,enemyHpVal=100;
+let battle=false;
+let enemy={name:"",level:1};
+let battleAnimTimer=null;
+
+function log(t){document.getElementById("log").querySelector(".log-inner").innerText="▶ "+t;}
 
 function saveGame(){
-    localStorage.setItem("vaporSave", JSON.stringify(player));
+  localStorage.setItem("vaporSave2",JSON.stringify({player,team}));
 }
-
 function loadGame(){
-    let save = localStorage.getItem("vaporSave");
-
-    if(save){
-        Object.assign(player, JSON.parse(save));
-    }
+  const s=localStorage.getItem("vaporSave2");
+  if(s){
+    const d=JSON.parse(s);
+    Object.assign(player,d.player);
+    if(d.team&&d.team.length) team.push(...d.team);
+  }
 }
-
 loadGame();
 
-function tile(x,y){
-
-    if(x<0 || y<0 || x>700 || y>700) return 2;
-
-    if(x%25===0 && y%25===0) return 5;
-
-    if(x%18===0) return 3;
-
-    let n = Math.abs(Math.sin(x*12.989+y*78.233)*9999)%1;
-
-    if(n<0.25) return 1;
-    if(n<0.33) return 2;
-    if(n<0.38) return 4;
-
-    return 0;
+function switchTab(name){
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",["stats","team","shop"][i]===name));
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("active",p.id==="tab-"+name));
+  if(name==="shop") document.getElementById("shopMoney").innerText=player.money+"$";
 }
 
 function updateUI(){
-
-    document.getElementById("level").innerText = player.level;
-    document.getElementById("exp").innerText = player.exp+"/100";
-    document.getElementById("money").innerText = player.money+"$";
-    document.getElementById("balls").innerText = player.balls;
-    document.getElementById("caught").innerText = player.caught;
-    document.getElementById("coords").innerText = player.x+", "+player.y;
-    document.getElementById("weather").innerText = weather;
-
-    let zoneID = Math.floor(player.x/15)+Math.floor(player.y/15)*7;
-    zoneID=Math.max(0,Math.min(55,zoneID));
-
-    document.getElementById("zone").innerText = zones[zoneID];
-
-    if(player.mission<=100){
-        document.getElementById("missionText").innerText =
-        "MISIÓN "+player.mission+"/100: "+missions[player.mission-1];
-    }else{
-        document.getElementById("missionText").innerText =
-        "¡HAS COMPLETADO EL JUEGO!";
-    }
-
-    saveGame();
+  document.getElementById("level").innerText=player.level;
+  document.getElementById("exp").innerText=player.exp+"/100";
+  document.getElementById("money").innerText=player.money+"$";
+  document.getElementById("balls").innerText=player.balls;
+  document.getElementById("caught").innerText=player.caught;
+  document.getElementById("steps").innerText=player.steps;
+  document.getElementById("coords").innerText=player.x+", "+player.y;
+  document.getElementById("weather").innerText=weather;
+  const zoneID=Math.max(0,Math.min(54,Math.floor(player.x/15)+Math.floor(player.y/15)*7));
+  document.getElementById("zone").innerText=zones[zoneID];
+  document.getElementById("shopMoney").innerText=player.money+"$";
+  if(player.mission<=100){
+    document.getElementById("missionText").innerText="MISIÓN "+player.mission+"/100: Completa la misión épica #"+player.mission;
+    const pct=Math.min(100,Math.floor(player.level/(player.mission/4+0.01)*100));
+    document.getElementById("missionBar").style.width=pct+"%";
+  } else {
+    document.getElementById("missionText").innerText="★ HAS COMPLETADO EL JUEGO ★";
+    document.getElementById("missionBar").style.width="100%";
+  }
+  const tl=document.getElementById("teamList");
+  const te=document.getElementById("teamEmpty");
+  if(team.length){
+    tl.innerHTML=team.map(m=>`<span class="monster-tag">${m.name} LV${m.level}</span>`).join("");
+    te.style.display="none";
+  } else {
+    tl.innerHTML=""; te.style.display="block";
+  }
+  saveGame();
 }
 
 function checkMission(){
-
-    if(player.level>=player.mission/4){
-
-        player.mission++;
-        player.money+=200;
-
-        log("¡Misión completada!");
-    }
+  if(player.level>=player.mission/4){
+    player.mission++;player.money+=200;
+    log("¡Misión "+( player.mission-1)+" completada! +200$");
+  }
 }
 
 function move(dx,dy){
-
-    if(battle) return;
-
-    let nx = player.x+dx;
-    let ny = player.y+dy;
-
-    let t = tile(nx,ny);
-
-    if(t===2) return;
-
-    if(t===3 && !player.surf){
-        log("Necesitas SURF.");
-        return;
-    }
-
-    player.x=nx;
-    player.y=ny;
-
-    if(Math.random()<0.16){
-        startBattle();
-    }
-
-    checkMission();
-
-    updateUI();
-
-    draw();
+  if(battle) return;
+  const nx=player.x+dx,ny=player.y+dy;
+  const t=tile(nx,ny);
+  if(t===2) return;
+  if(t===3&&!player.surf){log("Necesitas SURF para cruzar el agua.");return;}
+  player.x=nx;player.y=ny;player.steps++;
+  if(player.repel>0){player.repel--;} else if(Math.random()<0.16){startBattle();}
+  checkMission();
+  updateUI();
 }
 
 function startBattle(){
+  battle=true;
+  enemyHpVal=100;
+  enemy.name=monsters[Math.floor(Math.random()*monsters.length)];
+  enemy.level=Math.floor(Math.random()*10)+player.level;
+  if(Math.random()<0.04){enemy.name="★ "+enemy.name;enemy.level+=8;}
+  document.getElementById("enemyName").innerText=enemy.name;
+  document.getElementById("enemyLv").innerText="LV "+enemy.level;
+  document.getElementById("playerLv").innerText="LV "+player.level;
+  document.getElementById("playerTeamName").innerText=team.length?"LIDER: "+team[0].name:"TU EQUIPO";
+  updateBars();
+  document.getElementById("battleText").innerText="¡"+enemy.name+" apareció!";
+  renderSkills();
+  document.getElementById("battleOverlay").style.display="flex";
+}
 
-    battle=true;
-
-    enemyHp=100;
-
-    enemy.name = monsters[Math.floor(Math.random()*monsters.length)];
-    enemy.level = Math.floor(Math.random()*10)+player.level;
-
-    if(Math.random()<0.03){
-        enemy.name="✨ LEGENDARIO "+enemy.name;
-        enemy.level+=10;
-    }
-
-    document.getElementById("enemyName").innerText=enemy.name;
-    document.getElementById("enemyLv").innerText="LV "+enemy.level;
-    document.getElementById("playerLv").innerText="LV "+player.level;
-
-    updateBars();
-
-    document.getElementById("battleText").innerText=
-    "¡Un "+enemy.name+" apareció!";
-
-    document.getElementById("battleOverlay").style.display="flex";
+function renderSkills(){
+  const row=document.getElementById("skillsRow");
+  row.innerHTML="";
+  skills.forEach((s,i)=>{
+    const canUse=player.mp>=s.mp;
+    const b=document.createElement("button");
+    b.className="skill-btn";
+    b.style.opacity=canUse?"1":"0.4";
+    b.innerText=s.name+" ("+s.mp+"MP)";
+    b.disabled=!canUse;
+    b.onclick=()=>battleAction("skill",i);
+    row.appendChild(b);
+  });
 }
 
 function updateBars(){
-
-    document.getElementById("enemyHp").style.width=enemyHp+"%";
-    document.getElementById("playerHp").style.width=playerHp+"%";
+  const ep=Math.max(0,enemyHpVal),pp=Math.max(0,playerHpVal);
+  document.getElementById("enemyHp").style.width=ep+"%";
+  document.getElementById("playerHp").style.width=pp+"%";
+  document.getElementById("enemyHpNum").innerText=Math.round(ep);
+  document.getElementById("playerHpNum").innerText=Math.round(pp);
 }
 
-function battleAction(type){
+function battleAction(type,idx){
+  const txt=document.getElementById("battleText");
+  if(battleAnimTimer) clearTimeout(battleAnimTimer);
 
-    const txt = document.getElementById("battleText");
-
-    if(type==="run"){
-        battle=false;
-        document.getElementById("battleOverlay").style.display="none";
-        log("Escapaste.");
-        return;
+  if(type==="run"){
+    if(Math.random()<0.6){
+      battle=false;
+      document.getElementById("battleOverlay").style.display="none";
+      log("Escapaste del combate.");
+    } else {
+      txt.innerText="¡No pudiste escapar!";
+      enemyTurn();
     }
-
-    if(type==="heal"){
-        playerHp=Math.min(100,playerHp+30);
-        txt.innerText="Te curaste.";
-        updateBars();
-        enemyTurn();
-        return;
+    return;
+  }
+  if(type==="heal"){
+    playerHpVal=Math.min(100,playerHpVal+30);
+    txt.innerText="Te curaste +30 HP.";
+    updateBars();
+    enemyTurn();
+    return;
+  }
+  if(type==="attack"){
+    const dmg=Math.floor(Math.random()*20)+10+player.level;
+    enemyHpVal-=dmg;
+    txt.innerText="Ataque básico: "+dmg+" daño.";
+    checkVictory(txt);
+    return;
+  }
+  if(type==="skill"&&idx!==undefined){
+    const sk=skills[idx];
+    if(player.mp<sk.mp){txt.innerText="Sin MP para "+sk.name+".";return;}
+    player.mp-=sk.mp;
+    const dmg=Math.floor(Math.random()*(sk.dmg[1]-sk.dmg[0]))+sk.dmg[0]+player.level;
+    enemyHpVal-=dmg;
+    txt.innerText=sk.name+": "+dmg+" daño!";
+    renderSkills();
+    checkVictory(txt);
+    return;
+  }
+  if(type==="capture"){
+    if(player.balls<=0){txt.innerText="Sin Vaporballs disponibles.";return;}
+    player.balls--;
+    const chance=(100-enemyHpVal)/120+0.05;
+    if(Math.random()<chance){
+      player.caught++;
+      team.push({name:enemy.name,level:enemy.level});
+      txt.innerText="¡"+enemy.name+" capturado!";
+      battle=false;
+      battleAnimTimer=setTimeout(()=>document.getElementById("battleOverlay").style.display="none",1200);
+    } else {
+      txt.innerText="¡Vaporball falló! Debilítalo más.";
+      enemyTurn();
     }
+    updateUI();
+    return;
+  }
+}
 
-    if(type==="attack"){
-
-        let dmg=Math.floor(Math.random()*20)+10+player.level;
-
-        enemyHp-=dmg;
-
-        txt.innerText="Hiciste "+dmg+" daño.";
-
-        if(enemyHp<=0){
-
-            let reward=enemy.level*20;
-
-            player.money+=reward;
-            player.exp+=40;
-
-            if(player.exp>=100){
-                player.level++;
-                player.exp=0;
-            }
-
-            txt.innerText="¡Victoria! +"+reward+"$";
-
-            battle=false;
-
-            setTimeout(()=>{
-                document.getElementById("battleOverlay").style.display="none";
-            },1000);
-
-            updateUI();
-
-            return;
-        }
-
-        updateBars();
-
-        enemyTurn();
-    }
-
-    if(type==="capture"){
-
-        if(player.balls<=0){
-            txt.innerText="Sin Vaporballs.";
-            return;
-        }
-
-        player.balls--;
-
-        let chance=(100-enemyHp)/100;
-
-        if(Math.random()<chance){
-
-            player.caught++;
-
-            txt.innerText="¡Capturado!";
-
-            battle=false;
-
-            setTimeout(()=>{
-                document.getElementById("battleOverlay").style.display="none";
-            },1000);
-
-        }else{
-            txt.innerText="¡Falló!";
-            enemyTurn();
-        }
-
-        updateUI();
-    }
+function checkVictory(txt){
+  updateBars();
+  if(enemyHpVal<=0){
+    const xpGain=enemy.level*15*(player.xpBoost>0?2:1);
+    const reward=enemy.level*20;
+    player.money+=reward;
+    player.exp+=xpGain;
+    if(player.xpBoost>0) player.xpBoost--;
+    while(player.exp>=100){player.level++;player.exp-=100;log("¡Subiste al nivel "+player.level+"!");}
+    player.mp=Math.min(player.maxMp,player.mp+15);
+    txt.innerText="¡Victoria! +"+reward+"$ +"+xpGain+"XP";
+    battle=false;
+    battleAnimTimer=setTimeout(()=>{
+      document.getElementById("battleOverlay").style.display="none";
+    },1200);
+    updateUI();
+    return;
+  }
+  enemyTurn();
 }
 
 function enemyTurn(){
-
-    setTimeout(()=>{
-
-        if(!battle) return;
-
-        let dmg=Math.floor(Math.random()*12)+enemy.level;
-
-        playerHp-=dmg;
-
-        document.getElementById("battleText").innerText=
-        enemy.name+" hizo "+dmg+" daño.";
-
-        if(playerHp<=0){
-
-            playerHp=100;
-
-            player.x=50;
-            player.y=50;
-
-            battle=false;
-
-            document.getElementById("battleOverlay").style.display="none";
-
-            log("Fuiste derrotado.");
-
-        }
-
-        updateBars();
-
-    },700);
+  battleAnimTimer=setTimeout(()=>{
+    if(!battle) return;
+    const dmg=Math.floor(Math.random()*10)+enemy.level;
+    playerHpVal-=dmg;
+    document.getElementById("battleText").innerText=enemy.name+": "+dmg+" daño a tu equipo.";
+    if(playerHpVal<=0){
+      playerHpVal=100;
+      player.x=50;player.y=50;
+      battle=false;
+      document.getElementById("battleOverlay").style.display="none";
+      log("Fuiste derrotado. Regresaste al inicio.");
+    }
+    updateBars();
+    renderSkills();
+  },700);
 }
 
-function buyBalls(){
-
-    if(player.money>=50){
-        player.money-=50;
-        player.balls++;
-        updateUI();
-    }
-}
-
-function buySurf(){
-
-    if(player.money>=300 && !player.surf){
-
-        player.money-=300;
-        player.surf=true;
-
-        log("¡SURF desbloqueado!");
-
-        updateUI();
-    }
+function buyItem(type){
+  const costs={ball:50,balls5:200,surf:300,potion:80,xpboost:150,repel:60};
+  const cost=costs[type];
+  if(player.money<cost){log("Créditos insuficientes.");return;}
+  if(type==="surf"&&player.surf){log("Ya tienes SURF.");return;}
+  player.money-=cost;
+  if(type==="ball"){player.balls++;log("Vaporball comprada.");}
+  else if(type==="balls5"){player.balls+=5;log("×5 Vaporballs compradas.");}
+  else if(type==="surf"){player.surf=true;log("¡SURF desbloqueado! Cruza el agua.");}
+  else if(type==="potion"){playerHpVal=Math.min(100,playerHpVal+50);log("Poción usada. +50 HP.");}
+  else if(type==="xpboost"){player.xpBoost+=10;log("XP ×2 activo por 10 batallas.");}
+  else if(type==="repel"){player.repel+=20;log("Repelente activo por 20 pasos.");}
+  updateUI();
 }
 
 function updateWeather(){
-
-    timeCycle++;
-
-    if(timeCycle%500===0){
-
-        const w=["Soleado","Lluvia","Tormenta","Niebla"];
-
-        weather=w[Math.floor(Math.random()*w.length)];
-    }
+  timeCycle++;
+  if(timeCycle%600===0){
+    const w=["Soleado","Soleado","Lluvia","Tormenta","Niebla"];
+    weather=w[Math.floor(Math.random()*w.length)];
+  }
 }
 
+const tileColors={0:"#111820",1:"#1a2e1a",2:"#0a1e2a",3:"#0d3050",4:"#252525",5:"#2a1040"};
+const tileColors2={0:"#0d121a",1:"#152815",2:"#071520",3:"#0a2540",4:"#1e1e1e",5:"#200c30"};
+
+let frame=0;
 function draw(){
-
-    updateWeather();
-
-    ctx.clearRect(0,0,640,448);
-
-    let camX=player.x-Math.floor(COLS/2);
-    let camY=player.y-Math.floor(ROWS/2);
-
-    for(let r=0;r<ROWS;r++){
-
-        for(let c=0;c<COLS;c++){
-
-            let wx=camX+c;
-            let wy=camY+r;
-
-            let t=tile(wx,wy);
-
-            let x=c*TILE;
-            let y=r*TILE;
-
-            switch(t){
-
-                case 0: ctx.fillStyle="#1e272c"; break;
-                case 1: ctx.fillStyle="#2ecc71"; break;
-                case 2: ctx.fillStyle="#556b2f"; break;
-                case 3: ctx.fillStyle="#2980b9"; break;
-                case 4: ctx.fillStyle="#95a5a6"; break;
-                case 5: ctx.fillStyle="#9b59b6"; break;
-            }
-
-            ctx.fillRect(x,y,TILE,TILE);
-
-            if(t===1){
-
-                ctx.fillStyle="rgba(0,0,0,0.1)";
-
-                for(let i=0;i<5;i++){
-                    ctx.fillRect(
-                        x+Math.random()*32,
-                        y+Math.random()*32,
-                        2,
-                        2
-                    );
-                }
-            }
-
-            if(t===3){
-
-                ctx.fillStyle="rgba(255,255,255,0.08)";
-                ctx.fillRect(x,y,32,5);
-            }
-
-            ctx.strokeStyle="rgba(0,0,0,0.2)";
-            ctx.strokeRect(x,y,TILE,TILE);
-        }
+  updateWeather();
+  frame++;
+  ctx.clearRect(0,0,648,448);
+  const camX=player.x-Math.floor(COLS/2);
+  const camY=player.y-Math.floor(ROWS/2);
+  for(let r=0;r<ROWS+1;r++){
+    for(let c=0;c<COLS+1;c++){
+      const wx=camX+c,wy=camY+r;
+      const t=tile(wx,wy);
+      const x=c*TILE,y=r*TILE;
+      ctx.fillStyle=tileColors[t]||tileColors[0];
+      ctx.fillRect(x,y,TILE,TILE);
+      if(t===1){
+        ctx.fillStyle=tileColors2[1];
+        const pts=getGrassDetails(wx,wy);
+        for(const p of pts) ctx.fillRect(x+p.ox,y+p.oy,2,3);
+      }
+      if(t===3){
+        const waveOffset=(frame*0.04)%1;
+        ctx.fillStyle="rgba(100,180,255,0.12)";
+        ctx.fillRect(x,y+Math.floor(waveOffset*TILE),TILE,3);
+      }
+      if(t===5){
+        ctx.fillStyle="#3a1060";
+        ctx.fillRect(x+4,y+4,TILE-8,TILE-8);
+      }
     }
+  }
 
-    let px=(player.x-camX)*TILE+4;
-    let py=(player.y-camY)*TILE+4;
+  const px=(player.x-camX)*TILE+4,py=(player.y-camY)*TILE+4;
+  const bobY=Math.sin(frame*0.1)*1.5;
+  const evolved=team.length>=5;
+  ctx.fillStyle=evolved?"#ff9040":"#44aaff";
+  ctx.fillRect(px,py+bobY,TILE-8,TILE-8);
+  ctx.strokeStyle=evolved?"rgba(255,140,60,0.6)":"rgba(80,180,255,0.6)";
+  ctx.lineWidth=2;
+  ctx.strokeRect(px-1,py+bobY-1,TILE-6,TILE-6);
+  ctx.lineWidth=1;
 
-    ctx.fillStyle=player.evolved ? "#ff7f50":"#f1c40f";
-    ctx.fillRect(px,py,TILE-8,TILE-8);
-
-    ctx.strokeStyle="black";
-    ctx.strokeRect(px,py,TILE-8,TILE-8);
-
-    if(weather==="Lluvia"){
-
-        ctx.fillStyle="rgba(100,100,255,0.15)";
-        ctx.fillRect(0,0,640,448);
-
-        for(let i=0;i<120;i++){
-
-            ctx.fillStyle="rgba(200,200,255,0.5)";
-            ctx.fillRect(
-                Math.random()*640,
-                Math.random()*448,
-                2,
-                10
-            );
-        }
+  if(weather==="Lluvia"||weather==="Tormenta"){
+    ctx.fillStyle="rgba(80,100,200,0.08)";
+    ctx.fillRect(0,0,648,448);
+    ctx.fillStyle="rgba(180,200,255,0.45)";
+    for(const d of rainDrops){
+      ctx.fillRect(d.x,d.y,1,8);
+      d.y+=d.spd;
+      d.x+=0.5;
+      if(d.y>448){d.y=0;d.x=Math.random()*648;}
     }
-
-    if(weather==="Tormenta"){
-
-        ctx.fillStyle="rgba(0,0,0,0.25)";
-        ctx.fillRect(0,0,640,448);
+  }
+  if(weather==="Tormenta"){
+    ctx.fillStyle="rgba(0,0,0,0.2)";
+    ctx.fillRect(0,0,648,448);
+    if(Math.random()<0.003){
+      ctx.fillStyle="rgba(200,220,255,0.5)";
+      ctx.fillRect(0,0,648,448);
     }
+  }
+  if(weather==="Niebla"){
+    ctx.fillStyle="rgba(180,200,220,0.06)";
+    ctx.fillRect(0,0,648,448);
+  }
 
-    if(weather==="Niebla"){
+  const darkness=Math.abs(Math.sin(timeCycle*0.0015))*0.4;
+  ctx.fillStyle=`rgba(0,0,30,${darkness})`;
+  ctx.fillRect(0,0,648,448);
 
-        ctx.fillStyle="rgba(255,255,255,0.07)";
-        ctx.fillRect(0,0,640,448);
+  const mx=Math.max(0,Math.min(648-110,648-115)),my=8;
+  ctx.fillStyle="rgba(0,2,8,0.8)";
+  ctx.fillRect(mx,my,108,108);
+  ctx.strokeStyle="#1a3050";
+  ctx.strokeRect(mx,my,108,108);
+  for(let mr=0;mr<12;mr++){
+    for(let mc=0;mc<12;mc++){
+      const wxt=player.x+mc-6,wyt=player.y+mr-6;
+      const t2=tile(wxt,wyt);
+      ctx.fillStyle=tileColors[t2]||tileColors[0];
+      ctx.fillRect(mx+2+mc*8,my+2+mr*8,7,7);
     }
+  }
+  ctx.fillStyle="#44aaff";
+  ctx.fillRect(mx+2+6*8+1,my+2+6*8+1,5,5);
 
-    let darkness=Math.abs(Math.sin(timeCycle*0.002))*0.45;
+  ctx.fillStyle="#4af";
+  ctx.font="9px 'Share Tech Mono'";
+  ctx.fillText("MAP",mx+38,my+104);
 
-    ctx.fillStyle=`rgba(0,0,40,${darkness})`;
-    ctx.fillRect(0,0,640,448);
+  if(player.repel>0){
+    ctx.fillStyle="#2f9";
+    ctx.font="10px 'Share Tech Mono'";
+    ctx.fillText("REPEL:"+player.repel,8,20);
+  }
+  if(player.xpBoost>0){
+    ctx.fillStyle="#fa0";
+    ctx.font="10px 'Share Tech Mono'";
+    ctx.fillText("XP×2:"+player.xpBoost,8,34);
+  }
 
-    ctx.fillStyle="rgba(0,0,0,0.7)";
-    ctx.fillRect(500,10,120,120);
-
-    for(let my=0;my<12;my++){
-
-        for(let mx=0;mx<12;mx++){
-
-            let wx=player.x+mx-6;
-            let wy=player.y+my-6;
-
-            let t=tile(wx,wy);
-
-            switch(t){
-                case 0: ctx.fillStyle="#444"; break;
-                case 1: ctx.fillStyle="#2ecc71"; break;
-                case 2: ctx.fillStyle="#556b2f"; break;
-                case 3: ctx.fillStyle="#3498db"; break;
-                default: ctx.fillStyle="#999";
-            }
-
-            ctx.fillRect(
-                505+mx*9,
-                15+my*9,
-                8,
-                8
-            );
-        }
-    }
-
-    ctx.fillStyle="#f1c40f";
-    ctx.fillRect(558,68,6,6);
+  requestAnimationFrame(draw);
 }
 
+const keys={};
 window.addEventListener("keydown",e=>{
-
-    if(e.key==="ArrowUp" || e.key==="w") move(0,-1);
-    if(e.key==="ArrowDown" || e.key==="s") move(0,1);
-    if(e.key==="ArrowLeft" || e.key==="a") move(-1,0);
-    if(e.key==="ArrowRight" || e.key==="d") move(1,0);
+  if(keys[e.key]) return;
+  keys[e.key]=true;
+  if(e.key==="ArrowUp"||e.key==="w"||e.key==="W") move(0,-1);
+  if(e.key==="ArrowDown"||e.key==="s"||e.key==="S") move(0,1);
+  if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A") move(-1,0);
+  if(e.key==="ArrowRight"||e.key==="d"||e.key==="D") move(1,0);
 });
+window.addEventListener("keyup",e=>delete keys[e.key]);
 
 updateUI();
-draw();
-
-setInterval(draw,120);
-
+requestAnimationFrame(draw);
 </script>
-
 </body>
 </html>
