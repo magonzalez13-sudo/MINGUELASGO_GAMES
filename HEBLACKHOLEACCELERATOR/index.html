@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>The Black Hole Accelerator</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    user-select:none;
+}
+
+body{
+    background:#030308;
+    color:#e2e8f0;
+    font-family:'Orbitron',sans-serif;
+    overflow:hidden;
+    height:100vh;
+    display:flex;
+}
+
+/* =========================
+   CONTENEDOR GENERAL
+========================= */
+
+.game-container{
+    display:flex;
+    width:100vw;
+    height:100vh;
+    position:relative;
+}
+
+/* =========================
+   ZONA UNIVERSO
+========================= */
+
+.universe-section{
+    flex:1;
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at center,
+        #0a0a23 0%,
+        #030308 80%);
+    overflow:hidden;
+}
+
+#milkyWay{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    cursor:crosshair;
+}
+
+/* =========================
+   HUD
+========================= */
+
+.hud{
+    position:absolute;
+    top:30px;
+    text-align:center;
+    z-index:10;
+    pointer-events:none;
+}
+
+.hud h1{
+    font-size:1.2rem;
+    color:#8b5cf6;
+    text-transform:uppercase;
+    letter-spacing:3px;
+    margin-bottom:5px;
+}
+
+.energy-counter{
+    font-size:3rem;
+    font-weight:900;
+    color:#00f2ff;
+    text-shadow:0 0 20px rgba(0,242,255,0.7);
+}
+
+.era-badge{
+    font-size:0.9rem;
+    background:rgba(139,92,246,0.2);
+    padding:6px 16px;
+    border-radius:20px;
+    border:1px solid #8b5cf6;
+    color:#d8b4fe;
+    margin-top:10px;
+    display:inline-block;
+}
+
+/* =========================
+   PANEL DERECHO
+========================= */
+
+.control-panel{
+    width:400px;
+    background:rgba(10,10,25,0.88);
+    border-left:2px solid rgba(139,92,246,0.3);
+    backdrop-filter:blur(10px);
+    padding:30px;
+    display:flex;
+    flex-direction:column;
+    z-index:20;
+    box-shadow:-10px 0 30px rgba(0,0,0,0.5);
+}
+
+.panel-header{
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    padding-bottom:20px;
+    margin-bottom:20px;
+}
+
+.panel-header h2{
+    font-size:1.4rem;
+    color:white;
+}
+
+.stat-box{
+    display:flex;
+    justify-content:space-between;
+    margin-top:10px;
+    font-size:0.85rem;
+    color:#94a3b8;
+}
+
+.shop-container{
+    flex:1;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    padding-right:5px;
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+.upgrade-btn{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px;
+    padding:15px;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    transition:0.2s;
+    text-align:left;
+}
+
+.upgrade-btn:hover:not(:disabled){
+    background:rgba(139,92,246,0.15);
+    border-color:#8b5cf6;
+    transform:translateY(-2px);
+}
+
+.upgrade-btn:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+}
+
+.upgrade-info .title{
+    font-weight:700;
+    color:white;
+    margin-bottom:4px;
+}
+
+.upgrade-info .desc{
+    font-size:0.75rem;
+    color:#94a3b8;
+}
+
+.upgrade-cost{
+    text-align:right;
+}
+
+.upgrade-cost .price{
+    font-weight:700;
+    color:#00f2ff;
+}
+
+.upgrade-cost .level{
+    font-size:0.7rem;
+    color:#8b5cf6;
+}
+
+/* =========================
+   SHAKE
+========================= */
+
+@keyframes shake{
+    0%{transform:translate(1px,1px);}
+    25%{transform:translate(-2px,2px);}
+    50%{transform:translate(2px,-2px);}
+    75%{transform:translate(-1px,-1px);}
+    100%{transform:translate(1px,-2px);}
+}
+
+.shaking{
+    animation:shake 0.15s infinite;
+}
+
+/* =========================
+   SCROLL
+========================= */
+
+::-webkit-scrollbar{
+    width:6px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:rgba(139,92,246,0.4);
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game-container">
+
+    <div class="universe-section" id="universe">
+
+        <div class="hud">
+            <h1>Masa del Colapso</h1>
+
+            <div class="energy-counter" id="materiaDisplay">
+                0
+            </div>
+
+            <div class="era-badge" id="eraDisplay">
+                Era I: Escala Atómica
+            </div>
+        </div>
+
+        <canvas id="milkyWay"></canvas>
+    </div>
+
+    <div class="control-panel">
+
+        <div class="panel-header">
+
+            <h2>Acelerador Cuántico</h2>
+
+            <div class="stat-box">
+                <span>
+                    Poder: <strong id="clickPowerDisplay">1</strong>
+                </span>
+
+                <span>
+                    Sincro: <strong id="multiplierDisplay">x5</strong>
+                </span>
+            </div>
+        </div>
+
+        <div class="shop-container">
+
+            <button class="upgrade-btn" id="btnPoder" onclick="buyUpgrade('poder')">
+
+                <div class="upgrade-info">
+                    <div class="title">Inyector de Quarks</div>
+                    <div class="desc">Más materia por clic.</div>
+                </div>
+
+                <div class="upgrade-cost">
+                    <div class="price" id="costPoder">15</div>
+                    <div class="level" id="lvlPoder">Lvl 0</div>
+                </div>
+            </button>
+
+            <button class="upgrade-btn" id="btnSincro" onclick="buyUpgrade('sincro')">
+
+                <div class="upgrade-info">
+                    <div class="title">Estabilizador Orbital</div>
+                    <div class="desc">Más multiplicador perfecto.</div>
+                </div>
+
+                <div class="upgrade-cost">
+                    <div class="price" id="costSincro">100</div>
+                    <div class="level" id="lvlSincro">Lvl 0</div>
+                </div>
+            </button>
+
+            <button class="upgrade-btn" id="btnRadio" onclick="buyUpgrade('radio')">
+
+                <div class="upgrade-info">
+                    <div class="title">Amplificador de Fusión</div>
+                    <div class="desc">Zona verde más grande.</div>
+                </div>
+
+                <div class="upgrade-cost">
+                    <div class="price" id="costRadio">500</div>
+                    <div class="level" id="lvlRadio">Lvl 0</div>
+                </div>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<script>
+/* =========================
+   GAME DATA
+========================= */
+
+const game = {
+
+    materia:0,
+
+    clickPower:1,
+
+    syncMultiplier:5,
+
+    targetZoneSize:0.25,
+
+    era:1,
+
+    upgrades:{
+        poder:{lvl:0,baseCost:15,costMult:1.5},
+        sincro:{lvl:0,baseCost:100,costMult:1.6},
+        radio:{lvl:0,baseCost:500,costMult:1.8}
+    }
+};
+
+/* =========================
+   ERAS
+========================= */
+
+const erasNames = [
+    "Era I: Escala Atómica",
+    "Era II: Escala Planetaria",
+    "Era III: Escala Galáctica",
+    "Era IV: Colapso del Tiempo"
+];
+
+/* =========================
+   CANVAS
+========================= */
+
+const canvas = document.getElementById("milkyWay");
+const ctx = canvas.getContext("2d");
+
+const universeDiv = document.getElementById("universe");
+
+let width,height;
+
+let bhX,bhY;
+
+function resizeCanvas(){
+
+    width = canvas.width = universeDiv.clientWidth;
+    height = canvas.height = universeDiv.clientHeight;
+
+    bhX = width/2;
+    bhY = height/2;
+}
+
+window.addEventListener("resize",resizeCanvas);
+
+resizeCanvas();
+
+/* =========================
+   BLACK HOLE
+========================= */
+
+const bhRadius = 60;
+
+const orbitRadius = 110;
+
+let orbitAngle = 0;
+
+let orbitSpeed = 0.04;
+
+/* =========================
+   ARRAYS
+========================= */
+
+let particles = [];
+
+let floatingTexts = [];
+
+let shockwaves = [];
+
+/* =========================
+   SHAKE
+========================= */
+
+let shakeTimeout;
+
+/* =========================
+   UPDATE UI
+========================= */
+
+function updateUI(){
+
+    document.getElementById("materiaDisplay")
+    .innerText = formatNum(Math.floor(game.materia));
+
+    document.getElementById("clickPowerDisplay")
+    .innerText = game.clickPower;
+
+    document.getElementById("multiplierDisplay")
+    .innerText = "x" + game.syncMultiplier;
+
+    for(let key in game.upgrades){
+
+        let cost = getUpgradeCost(key);
+
+        let cap =
+            key.charAt(0).toUpperCase() +
+            key.slice(1);
+
+        document.getElementById("cost"+cap)
+        .innerText = formatNum(cost);
+
+        document.getElementById("lvl"+cap)
+        .innerText = "Lvl " + game.upgrades[key].lvl;
+
+        document.getElementById("btn"+cap)
+        .disabled = game.materia < cost;
+    }
+}
+
+/* =========================
+   FORMAT NUM
+========================= */
+
+function formatNum(num){
+
+    if(num >= 1e9)
+        return (num/1e9).toFixed(2)+" B";
+
+    if(num >= 1e6)
+        return (num/1e6).toFixed(2)+" M";
+
+    if(num >= 1e3)
+        return (num/1e3).toFixed(1)+" K";
+
+    return Math.floor(num).toString();
+}
+
+/* =========================
+   UPGRADES
+========================= */
+
+function getUpgradeCost(key){
+
+    let up = game.upgrades[key];
+
+    return Math.floor(
+        up.baseCost *
+        Math.pow(up.costMult,up.lvl)
+    );
+}
+
+function buyUpgrade(key){
+
+    let cost = getUpgradeCost(key);
+
+    if(game.materia < cost) return;
+
+    game.materia -= cost;
+
+    game.upgrades[key].lvl++;
+
+    if(key === "poder"){
+
+        game.clickPower += Math.ceil(
+            game.upgrades.poder.lvl * 1.5
+        );
+    }
+
+    else if(key === "sincro"){
+
+        game.syncMultiplier += 2;
+    }
+
+    else if(key === "radio"){
+
+        game.targetZoneSize += 0.04;
+
+        orbitSpeed += 0.003;
+    }
+}
+
+/* =========================
+   ERA
+========================= */
+
+function checkEraProgression(){
+
+    let oldEra = game.era;
+
+    if(game.materia > 1000000)
+        game.era = 4;
+
+    else if(game.materia > 25000)
+        game.era = 3;
+
+    else if(game.materia > 400)
+        game.era = 2;
+
+    if(oldEra !== game.era){
+
+        document.getElementById("eraDisplay")
+        .innerText = erasNames[game.era - 1];
+
+        triggerScreenShake();
+    }
+}
+
+/* =========================
+   SHAKE
+========================= */
+
+function triggerScreenShake(){
+
+    universeDiv.classList.add("shaking");
+
+    clearTimeout(shakeTimeout);
+
+    shakeTimeout = setTimeout(()=>{
+
+        universeDiv.classList.remove("shaking");
+
+    },150);
+}
+
+/* =========================
+   CLICK
+========================= */
+
+canvas.addEventListener("mousedown",(e)=>{
+
+    const rect = canvas.getBoundingClientRect();
+
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const targetAngle = Math.PI * 1.5;
+
+    let diff = Math.atan2(
+        Math.sin(orbitAngle - targetAngle),
+        Math.cos(orbitAngle - targetAngle)
+    );
+
+    diff = Math.abs(diff);
+
+    let isPerfect =
+        diff <= (game.targetZoneSize / 2);
+
+    let gained = game.clickPower;
+
+    let color = "0,242,255";
+
+    let size = 16;
+
+    let weight = "400";
+
+    let label = "";
+
+    if(isPerfect){
+
+        gained *= game.syncMultiplier;
+
+        color = "0,255,136";
+
+        size = 24;
+
+        weight = "900";
+
+        label = "¡FUSIÓN! ";
+
+        triggerScreenShake();
+
+        shockwaves.push({
+            r:bhRadius,
+            speed:6,
+            alpha:1,
+            color:"0,255,136"
+        });
+
+        for(let i=0;i<25;i++){
+
+            if(particles.length > 400) break;
+
+            let angle = Math.random() * Math.PI * 2;
+
+            particles.push({
+
+                x:bhX + Math.cos(angle) * orbitRadius,
+                y:bhY + Math.sin(angle) * orbitRadius,
+
+                vx:(Math.random()-0.5)*4,
+                vy:(Math.random()-0.5)*4,
+
+                size:Math.random()*3+2,
+
+                color:"#00ff88"
+            });
+        }
+    }
+
+    else{
+
+        shockwaves.push({
+            r:10,
+            speed:4,
+            alpha:0.5,
+            color:"139,92,246"
+        });
+
+        for(let i=0;i<6;i++){
+
+            if(particles.length > 400) break;
+
+            particles.push({
+
+                x:mouseX,
+                y:mouseY,
+
+                vx:(Math.random()-0.5)*3,
+                vy:(Math.random()-0.5)*3,
+
+                size:Math.random()*2+1,
+
+                color:"#8b5cf6"
+            });
+        }
+    }
+
+    game.materia += gained;
+
+    floatingTexts.push({
+
+        x:mouseX - 20,
+        y:mouseY - 10,
+
+        text:label + "+" + formatNum(gained),
+
+        color,
+        alpha:1,
+
+        speedY:1.5,
+
+        size,
+        weight
+    });
+
+    checkEraProgression();
+});
+
+/* =========================
+   ANIMATE
+========================= */
+
+function animate(){
+
+    ctx.clearRect(0,0,width,height);
+
+    /* ORBITA */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        bhX,
+        bhY,
+        orbitRadius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.strokeStyle = "rgba(139,92,246,0.15)";
+    ctx.lineWidth = 14;
+
+    ctx.stroke();
+
+    /* PERFECT ZONE */
+
+    let startAngle =
+        (Math.PI * 1.5) -
+        (game.targetZoneSize / 2);
+
+    let endAngle =
+        (Math.PI * 1.5) +
+        (game.targetZoneSize / 2);
+
+    ctx.beginPath();
+
+    ctx.arc(
+        bhX,
+        bhY,
+        orbitRadius,
+        startAngle,
+        endAngle
+    );
+
+    ctx.strokeStyle = "#00ff88";
+    ctx.lineWidth = 16;
+
+    ctx.shadowColor = "#00ff88";
+    ctx.shadowBlur = 15;
+
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+    /* PARTICULA ORBITAL */
+
+    orbitAngle =
+        (orbitAngle + orbitSpeed) %
+        (Math.PI * 2);
+
+    let pX =
+        bhX +
+        Math.cos(orbitAngle) *
+        orbitRadius;
+
+    let pY =
+        bhY +
+        Math.sin(orbitAngle) *
+        orbitRadius;
+
+    ctx.beginPath();
+
+    ctx.arc(pX,pY,8,0,Math.PI*2);
+
+    ctx.fillStyle = "#ff3366";
+
+    ctx.shadowColor = "#ff3366";
+    ctx.shadowBlur = 15;
+
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    /* BLACK HOLE */
+
+    let pulse =
+        Math.sin(Date.now()*0.005) * 4;
+
+    let currentBhRadius =
+        bhRadius + pulse;
+
+    let gradient =
+        ctx.createRadialGradient(
+            bhX,bhY,currentBhRadius*0.4,
+            bhX,bhY,currentBhRadius
+        );
+
+    gradient.addColorStop(0,"#000");
+    gradient.addColorStop(0.7,"#050510");
+    gradient.addColorStop(1,"#1e1b4b");
+
+    ctx.beginPath();
+
+    ctx.arc(
+        bhX,
+        bhY,
+        currentBhRadius,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fillStyle = gradient;
+
+    ctx.shadowColor =
+        game.era === 1 ? "#8b5cf6" :
+        game.era === 2 ? "#3b82f6" :
+        game.era === 3 ? "#ec4899" :
+        "#00f2ff";
+
+    ctx.shadowBlur = 30;
+
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    /* SHOCKWAVES */
+
+    for(let i=shockwaves.length-1;i>=0;i--){
+
+        let sw = shockwaves[i];
+
+        sw.r += sw.speed;
+
+        sw.alpha -= 0.02;
+
+        if(sw.alpha <= 0){
+
+            shockwaves.splice(i,1);
+
+            continue;
+        }
+
+        ctx.beginPath();
+
+        ctx.arc(
+            bhX,
+            bhY,
+            sw.r,
+            0,
+            Math.PI*2
+        );
+
+        ctx.strokeStyle =
+            `rgba(${sw.color},${sw.alpha})`;
+
+        ctx.lineWidth = 4;
+
+        ctx.stroke();
+    }
+
+    /* PARTICLES */
+
+    for(let i=particles.length-1;i>=0;i--){
+
+        let p = particles[i];
+
+        let dx = bhX - p.x;
+        let dy = bhY - p.y;
+
+        let dist =
+            Math.sqrt(dx*dx + dy*dy);
+
+        dist = Math.max(dist,20);
+
+        let force =
+            400 / (dist * 0.1);
+
+        p.vx +=
+            (dx / dist) *
+            force *
+            0.01;
+
+        p.vy +=
+            (dy / dist) *
+            force *
+            0.01;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if(dist < currentBhRadius){
+
+            particles.splice(i,1);
+
+            continue;
+        }
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fillStyle = p.color;
+
+        ctx.fill();
+    }
+
+    /* FLOATING TEXT */
+
+    for(let i=floatingTexts.length-1;i>=0;i--){
+
+        let t = floatingTexts[i];
+
+        t.y -= t.speedY;
+
+        t.alpha -= 0.02;
+
+        if(t.alpha <= 0){
+
+            floatingTexts.splice(i,1);
+
+            continue;
+        }
+
+        ctx.font =
+            `${t.weight} ${t.size}px Orbitron`;
+
+        ctx.fillStyle =
+            `rgba(${t.color},${t.alpha})`;
+
+        ctx.fillText(
+            t.text,
+            t.x,
+            t.y
+        );
+    }
+
+    updateUI();
+
+    requestAnimationFrame(animate);
+}
+
+/* =========================
+   START
+========================= */
+
+animate();
+</script>
+
+</body>
+</html>
